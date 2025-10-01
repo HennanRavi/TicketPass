@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Globais */
+:root { color-scheme: light; }
+* { outline-offset: 2px; }
+
+/* HERO: degradê/blur maior, canto inferior direito */
+.hero-blur { position: relative; }
+.hero-blur::after {
+  content: '';
+  position: absolute;
+  right: -8%;
+  bottom: -12%;
+  width: 66%;
+  height: 66%;
+  pointer-events: none;
+  background: radial-gradient(60% 60% at 50% 50%,
+    rgba(0,108,191,0.28) 0%,
+    rgba(0,108,191,0.18) 40%,
+    rgba(0,108,191,0.00) 72%);
+  filter: blur(14px);
+  border-bottom-right-radius: 28px;
+}
+

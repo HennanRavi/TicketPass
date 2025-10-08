@@ -3,7 +3,7 @@ export default function PricingTeaser() {
     <section className="relative">
       <div className="container mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-8 mt-10 md:mt-14 py-10 md:py-14">
         <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-12 lg:gap-20">
-          {/* ESQUERDA: PNG completo — maior */}
+          {/* ESQUERDA: PNG Logo*/}
           <div className="relative mx-auto md:mx-0 w-full max-w-[760px]">
             <img
               src="/assets/home/payout-full.png"
@@ -43,15 +43,6 @@ export default function PricingTeaser() {
 
             <div className="mt-2 text-slate-800 font-semibold">
               Isso sim é o melhor custo benefício!
-            </div>
-
-            <div className="mt-8">
-              <a
-                href="/quanto-custa"
-                className="inline-flex rounded-[6px] px-8 py-3 text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/30 transition"
-              >
-                Saiba mais
-              </a>
             </div>
           </div>
         </div>

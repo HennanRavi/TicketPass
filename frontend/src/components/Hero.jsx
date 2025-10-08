@@ -4,24 +4,12 @@ export default function Hero() {
       {/* Base branca para leitura */}
       <div className="absolute inset-0 -z-40 bg-white" />
 
-      {/* “focos” azuis com blur para dividir o hero do restante da página */}
-      <div className="pointer-events-none absolute inset-0 -z-30">
-        {/* foco esquerdo */}
-        <div className="absolute -left-20 top-[20%] h-[700px] w-[700px] rounded-full
-                        bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.40),transparent_60%)]
-                        blur-2xl" />
-        {/* foco direito */}
-        <div className="absolute -right-24 top-[25%] h-[700px] w-[700px] rounded-full
-                        bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.35),transparent_62%)]
-                        blur-2xl" />
-        {/* foco extra inferior */}
-        <div className="absolute left-1/3 bottom-0 h-[600px] w-[600px] translate-y-1/2 rounded-full
-                        bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.22),transparent_65%)]
-                        blur-3xl" />
-      </div>
+      {/* === GRADIENTE DIAMOND SUAVE (mais área branca e 50% mais transparente) === */}
+      <div className="absolute inset-0 -z-30 bg-[radial-gradient(ellipse_100%_80%_at_center,_white_0%,_white_20%,_rgba(113,165,211,0.3)_70%,_rgba(113,165,211,0.4)_100%)]" />
 
-      <div className="container mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-y-14 gap-x-16 md:grid-cols-2 pt-16 md:pt-24 pb-28 md:pb-32">
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-y-14 gap-x-16 md:grid-cols-2 pt-20 md:pt-28 pb-48 md:pb-56">
+
           {/* ESQUERDA: textos */}
           <div>
             <h1 className="text-4xl sm:text-5xl lg:text-[56px] leading-[1.05] font-extrabold tracking-tight text-slate-900">
@@ -42,56 +30,51 @@ export default function Hero() {
             <div className="mt-8 flex items-center gap-4">
               <a
                 href="/criar-evento"
-                className="rounded-[6px] px-8 py-3 text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/30 transition"
+                className="rounded-[2px] px-8 py-3 font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/30 transition"
               >
                 Crie seu evento
               </a>
               <a
                 href="/saiba-mais"
-                className="rounded-[6px] px-8 py-3 text-slate-700 border border-slate-200 hover:bg-slate-50 transition"
+                className="rounded-[2px] px-8 py-3 font-medium text-slate-800 border border-black/20 hover:bg-slate-50 transition"
               >
                 Saiba mais
               </a>
             </div>
           </div>
-
-          {/* DIREITA: mídia + mockups + gráfico */}
-          <div className="relative mx-auto md:mx-0 w-full max-w-[600px]">
-            {/* CARD DA FOTO */}
-            <div className="relative rounded-3xl ring-1 ring-black/10 bg-white shadow-xl overflow-hidden">
-              <img
-                src="/assets/hero/hero-photo.jpg"
-                alt="Criador de evento usando o notebook"
-                className="w-full h-[380px] md:h-[440px] object-cover"
-              />
-            </div>
-
-            {/* MOCKUP PRETO (FOTO) — topo-direita */}
-            <div className="absolute -top-6 -right-6 w-[84%] h-[88%] rounded-xl border-2 border-black/80 -z-10" />
-
-            {/* CARTÃO DO GRÁFICO (PNG) — menor e mais baixo/esquerda */}
-            <div className="absolute -bottom-8 -left-10 md:-bottom-10 md:-left-12">
-              {/* MOCKUP PRETO (GRÁFICO) — base-esquerda, square */}
-              <div className="absolute -bottom-5 -left-5 w-[260px] h-[170px] rounded-md border-2 border-black/80 -z-10" />
-              <div className="relative rounded-md bg-white ring-1 ring-black/10 shadow-xl overflow-hidden">
+            {/* === BLOCO DA MÍDIA (foto + gráfico) === */}
+            <div className="relative ml-auto w-[82%] max-w-[560px]">
+              {/* FOTO — Homem com café */}
+              <div className="relative inline-block">
                 <img
-                  src="/assets/hero/chart.png"
-                  alt="Gráfico de desempenho"
-                  className="w-[250px] h-auto object-contain"
+                  src="/assets/hero/hero-photo.jpg"
+                  alt="Profissional no notebook"
+                  className="w-full h-auto rounded-3xl object-contain"
                 />
+                {/* stroke fina da imagem */}
+                <div className="pointer-events-none absolute inset-0 rounded-3xl border-[0.75px] border-black/70 translate-x-4 -translate-y-4 -z-10" />
+              </div>
 
-                {/* BADGE 32% — meio-direita do gráfico */}
-                <span className="absolute top-1/2 -translate-y-1/2 -right-3 rounded-[6px] bg-white ring-1 ring-emerald-500/40 shadow px-3 py-1.5 text-sm font-semibold text-emerald-600">
-                  ↑ 32%
-                </span>
+              {/* GRÁFICO — com sombra leve e stroke descolada */}
+              <div className="absolute -bottom-8 -left-8 md:-bottom-10 md:-left-10 z-40 drop-shadow-md">
+                <div className="relative inline-block w-[190px] md:w-[200px]">
+                  <img
+                    src="/assets/hero/chart.png"
+                    alt="Gráfico de desempenho"
+                    className="w-full h-auto rounded-2xl object-contain shadow-md shadow-black/20"
+                  />
+                  {/* stroke fina, mais afastada */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl border-[0.75px] border-black/70 -translate-x-4 translate-y-4 -z-10" />
+
+                  {/* badge 32% — com sombra suave */}
+                  <span className="absolute top-1/2 -translate-y-1/2 -right-3 z-50 rounded-[6px] bg-white/95 ring-1 ring-emerald-500/40 shadow-lg shadow-black/20 px-3 py-1.5 text-xs font-semibold text-emerald-600">
+                    ↑ 32%
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* transição para próximo bloco */}
-      <div className="h-12 w-full bg-gradient-to-b from-transparent to-white/95" />
     </section>
   );
 }

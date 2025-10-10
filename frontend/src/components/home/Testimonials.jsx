@@ -55,12 +55,12 @@ export default function Testimonials({ items = defaultItems, intervalMs = 4000 }
   };
 
   return (
-    <section className="relative bg-slate-50/80">
+    <section className="relative bg-[#E7ECF2]">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-16 items-start">
           {/* Título */}
           <div className="md:col-span-5">
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight">
+           <h2 className="text-3xl sm:text-4xl lg:text-[40px] leading-tight font-extrabold text-slate-900">
               Ser a{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">melhor</span>
@@ -88,23 +88,28 @@ export default function Testimonials({ items = defaultItems, intervalMs = 4000 }
               ))}
             </div>
 
-            {/* Navegação (estilo do seu print) */}
+            {/* Navegação (setas brancas simples) */}
             <div className="mt-10 flex items-center gap-4">
               <button
                 type="button"
                 onClick={() => { prev(); startAutoplay(); }}
                 aria-label="Anterior"
-                className="h-11 w-11 rounded-full border border-black/15 bg-white shadow-sm hover:bg-slate-100 active:scale-[0.98] transition"
+                className="h-11 w-11 rounded-full bg-white flex items-center justify-center hover:bg-[#EEF3F8] transition active:scale-[0.97]"
               >
-                <span className="inline-block text-lg">←</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="black" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
               </button>
+
               <button
                 type="button"
                 onClick={() => { next(); startAutoplay(); }}
                 aria-label="Próximo"
-                className="h-11 w-11 rounded-full border border-black/15 bg-white shadow-sm hover:bg-slate-100 active:scale-[0.98] transition"
+                className="h-11 w-11 rounded-full bg-white flex items-center justify-center hover:bg-[#EEF3F8] transition active:scale-[0.97]"
               >
-                <span className="inline-block text-lg">→</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="black" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
               </button>
             </div>
           </div>
@@ -116,7 +121,7 @@ export default function Testimonials({ items = defaultItems, intervalMs = 4000 }
 
 function TestimonialCard({ name, rating = 5, text }) {
   return (
-    <article className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-black/10">
+    <article className="rounded-3xl bg-white p-8">
       <header className="flex items-center gap-4">
         <div className="h-12 w-12 rounded-full bg-slate-300" />
         <div>
@@ -128,6 +133,7 @@ function TestimonialCard({ name, rating = 5, text }) {
     </article>
   );
 }
+
 
 function Stars({ value = 5 }) {
   return (

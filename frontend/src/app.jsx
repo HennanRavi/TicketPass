@@ -16,6 +16,8 @@ import Footer from "@/components/layout/Footer.jsx";
 import EncontrarEventosPage from "@/pages/encontrar-eventos.jsx";
 import SupportRequest from "@/pages/SupportRequest.jsx";
 import SuportePage from "@/pages/Suporte.jsx";
+import Login from "@/pages/Login.jsx";
+import AuthCallback from "@/pages/AuthCallback.jsx";
 
 // 🔹 Outros componentes
 import EventCard from "@/components/events/EventCard.jsx";
@@ -50,6 +52,8 @@ export default function App() {
   const isSupportLanding = pathname === "/suporte";
   const isSupportForm = pathname === "/suporte/novo";
   const isFindEvents = pathname === "/encontrar-eventos";
+  const isAuthCallback = pathname === "/auth/callback";
+  const isLogin = pathname === "/login";
 
   return (
     <>
@@ -58,8 +62,8 @@ export default function App() {
         <SupportCenterHeader />
       ) : isSupportLanding ? (
         <SupportHeader />
-      ) : isFindEvents ? (
-        // 👉 não renderiza nada aqui, pois a própria página já traz NavbarEncontrarEventos
+      ) : isFindEvents || isAuthCallback || isLogin ? (
+        // 👉 essas páginas já têm layout próprio (sem header fixo)
         null
       ) : (
         <NavigationBar />
@@ -70,6 +74,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/suporte" element={<SuportePage />} />
         <Route path="/suporte/novo" element={<SupportRequest />} />
+
         <Route
           path="/encontrar-eventos"
           element={
@@ -83,6 +88,9 @@ export default function App() {
             />
           }
         />
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </>
   );

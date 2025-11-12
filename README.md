@@ -15,4 +15,4 @@ npm run dev
 npm run build
 ```
 
-For more information and support, please contact Base44 support at consult.dev.hr@gmail.com
+For more information and support, please contact Hennan Ravi's support at consult.dev.hr@gmail.com

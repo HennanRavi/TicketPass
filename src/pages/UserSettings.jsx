@@ -1,0 +1,597 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate }
+ from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import { User, Mail, Phone, Camera, Save, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+
+export default function UserSettings() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingData, setPendingData] = useState(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [formData, setFormData] = useState({
+    display_name: "",
+    email: "",
+    phone: "",
+    profile_image: "",
+    user_type: "",
+  });
+
+  useEffect(() => {
+    base44.auth
+      .me()
+      .then((u) => {
+        setUser(u);
+        setFormData({
+          display_name: u.display_name || u.full_name || "",
+          email: u.email || "",
+          phone: u.phone || "",
+          profile_image: u.profile_image || "",
+          user_type: u.user_type || "participante",
+        });
+      })
+      .catch(() => {
+        base44.auth.redirectToLogin(window.location.href);
+      });
+  }, []);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+      // Use AI to validate if image is appropriate
+      const validation = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this image and determine if it's appropriate for a user profile picture. 
+        Check if it contains: inappropriate content, violence, nudity, hate symbols, or anything offensive.
+        Also verify if it's actually a photo (not a random object or inappropriate content).
+        Return a simple JSON with: {"appropriate": true/false, "reason": "brief explanation"}`,
+        file_urls: [file_url],
+        response_json_schema: {
+          type: "object",
+          properties: {
+            appropriate: { type: "boolean" },
+            reason: { type: "string" }
+          }
+        }
+      });
+
+      if (!validation.appropriate) {
+        toast.error(`Imagem não apropriada: ${validation.reason}`);
+        setIsUploading(false);
+        return;
+      }
+
+      setFormData({ ...formData, profile_image: file_url });
+      toast.success("Imagem enviada com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao enviar imagem");
+      console.error(error);
+    }
+    setIsUploading(false);
+  };
+
+  const updateUserMutation = useMutation({
+    mutationFn: async (data) => {
+      // Update custom fields using updateMe
+      await base44.auth.updateMe({
+        display_name: data.display_name,
+        phone: data.phone,
+        profile_image: data.profile_image,
+        user_type: data.user_type,
+      });
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      setShowConfirmDialog(false);
+      setPendingData(null);
+      
+      // Show success message
+      toast.success("✅ Perfil atualizado com sucesso!", {
+        description: "Suas alterações foram salvas.",
+        duration: 4000,
+      });
+      
+      // Update local user state - force reload from server
+      setTimeout(() => {
+        base44.auth.me().then((updatedUser) => {
+          setUser(updatedUser);
+          setFormData({
+            display_name: updatedUser.display_name || updatedUser.full_name || "",
+            email: updatedUser.email || "",
+            phone: updatedUser.phone || "",
+            profile_image: updatedUser.profile_image || "",
+            user_type: updatedUser.user_type || "participante",
+          });
+        });
+      }, 500);
+    },
+    onError: (error) => {
+      console.error("Error updating user:", error);
+      toast.error("Erro ao atualizar perfil. Tente novamente.");
+      setShowConfirmDialog(false);
+      setPendingData(null);
+    },
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate name
+    if (formData.display_name.trim().length < 3) {
+      toast.error("Nome deve ter pelo menos 3 caracteres");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error("Email inválido");
+      return;
+    }
+
+    // Validate phone (optional - accepts various formats)
+    if (formData.phone && formData.phone.trim()) {
+      // Remove all non-numeric characters for validation
+      const numbersOnly = formData.phone.replace(/\D/g, '');
+      
+      // Check if has between 10-11 digits (Brazilian phone)
+      if (numbersOnly.length < 10 || numbersOnly.length > 11) {
+        toast.error("Telefone deve ter 10 ou 11 dígitos. Ex: (11) 98765-4321");
+        return;
+      }
+    }
+
+    // Check if name or image changed
+    const nameChanged = formData.display_name !== (user.display_name || user.full_name);
+    const imageChanged = formData.profile_image !== user.profile_image;
+    const phoneChanged = formData.phone !== user.phone;
+    const userTypeChanged = formData.user_type !== user.user_type;
+
+    // If only phone or user_type changed (no validation needed)
+    if (!nameChanged && !imageChanged && (phoneChanged || userTypeChanged)) {
+      updateUserMutation.mutate({
+        display_name: formData.display_name,
+        phone: formData.phone,
+        profile_image: formData.profile_image,
+        user_type: formData.user_type,
+      });
+      return;
+    }
+    
+    // If nothing changed
+    if (!nameChanged && !imageChanged && !phoneChanged && !userTypeChanged) {
+      toast.info("Nenhuma alteração foi feita");
+      return;
+    }
+
+    // Validate name for profanity if changed
+    if (nameChanged) {
+      setIsValidating(true);
+      try {
+        const validation = await base44.integrations.Core.InvokeLLM({
+          prompt: `Analise este nome e determine se ele contém palavras de baixo calão, palavrões, ofensas, termos inapropriados ou vulgares em português.
+          Nome: "${formData.display_name}"
+          
+          Retorne um JSON com:
+          - "appropriate": true se o nome é apropriado, false se contém palavrões ou termos inadequados
+          - "reason": explicação breve em português do motivo (se inapropriado)`,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              appropriate: { type: "boolean" },
+              reason: { type: "string" }
+            }
+          }
+        });
+
+        if (!validation.appropriate) {
+          toast.error(`Nome não permitido: ${validation.reason}`);
+          setIsValidating(false);
+          return;
+        }
+      } catch (error) {
+        toast.error("Erro ao validar nome");
+        console.error(error);
+        setIsValidating(false);
+        return;
+      }
+      setIsValidating(false);
+    }
+
+    // Show confirmation dialog
+    setPendingData({
+      display_name: formData.display_name,
+      phone: formData.phone,
+      profile_image: formData.profile_image,
+      user_type: formData.user_type,
+    });
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    if (pendingData) {
+      updateUserMutation.mutate(pendingData);
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen py-8 bg-gray-50">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Configurações do Perfil</h1>
+          <p className="text-gray-600">Gerencie suas informações pessoais</p>
+        </div>
+
+        <Card className="border-none shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <User className="w-5 h-5" />
+              Informações Pessoais
+            </CardTitle>
+            <div className="mt-2">
+              <Badge className={
+                user?.role === "admin" 
+                  ? "bg-purple-100 text-purple-700" 
+                  : user?.user_type === "organizador"
+                    ? "bg-blue-100 text-blue-700" 
+                    : "bg-green-100 text-green-700"
+              }>
+                {user?.role === "admin" 
+                  ? "👑 Administrador" 
+                  : user?.user_type === "organizador" 
+                    ? "👔 Organizador" 
+                    : "🎉 Participante"}
+              </Badge>
+            </div>
+            <CardDescription>
+              Atualize seus dados e foto de perfil
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Profile Image */}
+              <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-200">
+                <div className="relative">
+                  {formData.profile_image ? (
+                    <img
+                      src={formData.profile_image}
+                      alt="Profile"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-100"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <User className="w-16 h-16 text-white" />
+                    </div>
+                  )}
+                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
+                    {isUploading ? (
+                      <Loader2 className="w-5 h-5 text-white animate-spin" />
+                    ) : (
+                      <Camera className="w-5 h-5 text-white" />
+                    )}
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={isUploading}
+                    />
+                  </label>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-900">{user.display_name || user.full_name}</p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </div>
+              </div>
+
+              <Alert className="bg-blue-50 border-blue-200">
+                <AlertCircle className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-xs text-blue-900">
+                  Sua foto de perfil será validada automaticamente. Imagens inapropriadas serão rejeitadas.
+                </AlertDescription>
+              </Alert>
+
+              {/* Display Name */}
+              <div>
+                <Label htmlFor="display_name" className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-gray-500" />
+                  Nome de Exibição *
+                </Label>
+                <Input
+                  id="display_name"
+                  value={formData.display_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, display_name: e.target.value })
+                  }
+                  required
+                  placeholder="Como você quer ser chamado"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Este nome será exibido em todo o sistema
+                </p>
+              </div>
+
+              {/* Email (readonly) */}
+              <div>
+                <Label htmlFor="email" className="flex items-center gap-2 mb-2">
+                  <Mail className="w-4 h-4 text-gray-500" />
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  disabled
+                  className="bg-gray-100"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  O email não pode ser alterado
+                </p>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <Label htmlFor="phone" className="flex items-center gap-2 mb-2">
+                  <Phone className="w-4 h-4 text-gray-500" />
+                  Telefone (opcional)
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  placeholder="(11) 98765-4321 ou 11987654321"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Aceita vários formatos: (11) 98765-4321, 11987654321, etc.
+                </p>
+              </div>
+
+              {/* Type Selection for non-admin users */}
+              {user.role !== "admin" && (
+                <div>
+                  <Label htmlFor="user_type" className="flex items-center gap-2 mb-2">
+                    <User className="w-4 h-4 text-gray-500" />
+                    Tipo de Perfil
+                  </Label>
+                  <select
+                    id="user_type"
+                    value={formData.user_type || "participante"}
+                    onChange={(e) =>
+                      setFormData({ ...formData, user_type: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="participante">🎉 Participante - Comprar ingressos e participar de eventos</option>
+                    <option value="organizador">👔 Organizador - Criar e gerenciar eventos</option>
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.user_type === "organizador" 
+                      ? "Como organizador, você pode criar e gerenciar eventos" 
+                      : "Como participante, você pode comprar ingressos e participar de eventos"}
+                  </p>
+                </div>
+              )}
+
+              {/* Admin Badge */}
+              {user.role === "admin" && (
+                <Alert className="bg-purple-50 border-purple-200">
+                  <AlertDescription className="text-sm text-purple-900">
+                    👑 Você é o <strong>Administrador</strong> da plataforma
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Submit Button */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate(createPageUrl("Home"))}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={updateUserMutation.isPending || isValidating}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                >
+                  {isValidating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Validando...
+                    </>
+                  ) : updateUserMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Salvar Alterações
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Confirmation Dialog */}
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                Confirmar Alterações
+              </DialogTitle>
+              <DialogDescription>
+                Deseja confirmar as alterações no seu perfil?
+              </DialogDescription>
+            </DialogHeader>
+            
+            {pendingData && (
+              <div className="py-4 space-y-4">
+                {/* Show changes */}
+                {pendingData.display_name !== (user.display_name || user.full_name) && (
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <p className="text-sm font-medium text-gray-900 mb-2">Nome:</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-500 line-through">{user.display_name || user.full_name}</span>
+                      <span className="text-gray-400">→</span>
+                      <span className="text-blue-600 font-medium">{pendingData.display_name}</span>
+                    </div>
+                  </div>
+                )}
+
+                {pendingData.profile_image !== user.profile_image && (
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <p className="text-sm font-medium text-gray-900 mb-3">Foto de Perfil:</p>
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Anterior</p>
+                        {user.profile_image ? (
+                          <img
+                            src={user.profile_image}
+                            alt="Anterior"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center">
+                            <User className="w-8 h-8 text-gray-500" />
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-gray-400">→</span>
+                      <div>
+                        <p className="text-xs text-gray-500 mb-2">Nova</p>
+                        <img
+                          src={pendingData.profile_image}
+                          alt="Nova"
+                          className="w-16 h-16 rounded-full object-cover border-2 border-blue-600"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {pendingData.phone !== user.phone && (
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <p className="text-sm font-medium text-gray-900 mb-2">Telefone:</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-500">{user.phone || "(não definido)"}</span>
+                      <span className="text-gray-400">→</span>
+                      <span className="text-green-700 font-medium">{pendingData.phone || "(não definido)"}</span>
+                    </div>
+                  </div>
+                )}
+
+                {pendingData.user_type !== user.user_type && (
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <p className="text-sm font-medium text-gray-900 mb-2">Tipo de Perfil:</p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-500">
+                        {user.user_type === "organizador" ? "👔 Organizador" : "🎉 Participante"}
+                      </span>
+                      <span className="text-gray-400">→</span>
+                      <span className="text-purple-700 font-medium">
+                        {pendingData.user_type === "organizador" ? "👔 Organizador" : "🎉 Participante"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <Alert className="bg-yellow-50 border-yellow-200">
+                  <AlertCircle className="h-4 w-4 text-yellow-600" />
+                  <AlertDescription className="text-sm text-yellow-900">
+                    Após confirmar, as alterações serão aplicadas imediatamente.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setPendingData(null);
+                }}
+                disabled={updateUserMutation.isPending}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmUpdate}
+                disabled={updateUserMutation.isPending}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+              >
+                {updateUserMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Confirmar Alterações
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
+  );
+}

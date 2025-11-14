@@ -14,6 +14,7 @@ import EventDetailsInfo from "../components/events/EventDetailsInfo";
 import PurchaseCard from "../components/events/PurchaseCard";
 import ReviewSection from "../components/reviews/ReviewSection";
 import OrganizerRating from "../components/organizer/OrganizerRating";
+import LoginModal from "../components/auth/LoginModal";
 
 export default function EventDetails() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function EventDetails() {
 
   const [user, setUser] = useState(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
@@ -128,13 +130,20 @@ export default function EventDetails() {
 
   const purchaseTicket = async (quantity) => {
     if (!user) {
-      base44.auth.redirectToLogin(window.location.href);
+      // Abrir modal de login ao invés de redirecionar
+      setShowLoginModal(true);
       return;
     }
 
     // Redirect to checkout page
     navigate(`${createPageUrl("Checkout")}?event=${eventId}&quantity=${quantity}`);
+  };
 
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    // Recarregar dados do usuário
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+    toast.success("Login realizado com sucesso!");
   };
 
   if (isLoading) {
@@ -143,7 +152,7 @@ export default function EventDetails() {
 
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-950">
         <EmptyState
           icon={TicketIcon}
           title="Evento não encontrado"
@@ -158,11 +167,11 @@ export default function EventDetails() {
   const availableTickets = event.capacity - (event.tickets_sold || 0);
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
+    <div className="min-h-screen py-8 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          className="mb-6"
+          className="mb-6 dark:text-gray-300 dark:hover:bg-gray-800"
           onClick={() => navigate(createPageUrl("Home"))}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -173,7 +182,7 @@ export default function EventDetails() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Image */}
-            <div className="relative h-96 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 shadow-2xl">
+            <div className="relative h-96 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 dark:from-purple-800 dark:to-purple-900 shadow-2xl">
               {event.image_url ? (
                 <img
                   src={event.image_url}
@@ -188,12 +197,12 @@ export default function EventDetails() {
               
               {/* Rating Badge */}
               {averageRating > 0 && (
-                <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
+                <div className="absolute top-6 left-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
                   <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-lg font-bold text-gray-900">
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {averageRating.toFixed(1)}
                   </span>
-                  <span className="text-sm text-gray-500">({reviews.length})</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">({reviews.length})</span>
                 </div>
               )}
             </div>
@@ -205,9 +214,9 @@ export default function EventDetails() {
 
             {/* Tabs */}
             <Tabs defaultValue="info" className="w-full">
-              <TabsList className="w-full grid grid-cols-2">
-                <TabsTrigger value="info">Informações</TabsTrigger>
-                <TabsTrigger value="reviews">
+              <TabsList className="w-full grid grid-cols-2 dark:bg-gray-800">
+                <TabsTrigger value="info" className="dark:data-[state=active]:bg-purple-600">Informações</TabsTrigger>
+                <TabsTrigger value="reviews" className="dark:data-[state=active]:bg-purple-600">
                   Avaliações ({reviews.length})
                 </TabsTrigger>
               </TabsList>
@@ -220,12 +229,12 @@ export default function EventDetails() {
                 />
 
                 {/* Description */}
-                <Card className="border-none shadow-lg">
+                <Card className="border-none shadow-lg dark:bg-gray-800">
                   <CardHeader>
-                    <CardTitle>Sobre o Evento</CardTitle>
+                    <CardTitle className="dark:text-white">Sobre o Evento</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                       {event.description}
                     </p>
                   </CardContent>
@@ -259,6 +268,13 @@ export default function EventDetails() {
           </div>
         </div>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal
+        open={showLoginModal}
+        onOpenChange={setShowLoginModal}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 }

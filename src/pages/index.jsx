@@ -52,6 +52,18 @@ import PaymentConfirmation from "./PaymentConfirmation";
 
 import AdminBankSetup from "./AdminBankSetup";
 
+import WebhookTest from "./WebhookTest";
+
+import SecurityDocs from "./SecurityDocs";
+
+import AdminPanel from "./AdminPanel";
+
+import AdminUsers from "./AdminUsers";
+
+import AdminEvents from "./AdminEvents";
+
+import AdminReports from "./AdminReports";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -107,6 +119,18 @@ const PAGES = {
     PaymentConfirmation: PaymentConfirmation,
     
     AdminBankSetup: AdminBankSetup,
+    
+    WebhookTest: WebhookTest,
+    
+    SecurityDocs: SecurityDocs,
+    
+    AdminPanel: AdminPanel,
+    
+    AdminUsers: AdminUsers,
+    
+    AdminEvents: AdminEvents,
+    
+    AdminReports: AdminReports,
     
 }
 
@@ -186,6 +210,18 @@ function PagesContent() {
                 <Route path="/PaymentConfirmation" element={<PaymentConfirmation />} />
                 
                 <Route path="/AdminBankSetup" element={<AdminBankSetup />} />
+                
+                <Route path="/WebhookTest" element={<WebhookTest />} />
+                
+                <Route path="/SecurityDocs" element={<SecurityDocs />} />
+                
+                <Route path="/AdminPanel" element={<AdminPanel />} />
+                
+                <Route path="/AdminUsers" element={<AdminUsers />} />
+                
+                <Route path="/AdminEvents" element={<AdminEvents />} />
+                
+                <Route path="/AdminReports" element={<AdminReports />} />
                 
             </Routes>
         </Layout>

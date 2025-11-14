@@ -3,16 +3,14 @@ import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Scan, CheckCircle2, XCircle, AlertCircle, Ticket as TicketIcon, Calendar, MapPin, User, QrCode, Camera } from "lucide-react";
+import { QrCode, CheckCircle2, XCircle, Scan, AlertCircle, Ticket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
 import QRScanner from "../components/scanner/QRScanner";
 
 export default function ValidateTicket() {
@@ -21,7 +19,6 @@ export default function ValidateTicket() {
   const [user, setUser] = useState(null);
   const [ticketCode, setTicketCode] = useState("");
   const [validationResult, setValidationResult] = useState(null);
-  const [isValidating, setIsValidating] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
   useEffect(() => {
@@ -29,8 +26,8 @@ export default function ValidateTicket() {
       .me()
       .then((u) => {
         if (u.role !== "admin") {
-          toast.error("Apenas o administrador pode validar ingressos");
           navigate(createPageUrl("Home"));
+          toast.error("Apenas administradores podem validar ingressos");
           return;
         }
         setUser(u);
@@ -42,72 +39,85 @@ export default function ValidateTicket() {
 
   const validateTicketMutation = useMutation({
     mutationFn: async (code) => {
-      setIsValidating(true);
       const tickets = await base44.entities.Ticket.filter({ ticket_code: code });
       
       if (tickets.length === 0) {
-        return { success: false, error: "Ingresso não encontrado" };
+        throw new Error("Ingresso não encontrado");
       }
 
       const ticket = tickets[0];
 
-      // Check if ticket belongs to organizer's event
-      const events = await base44.entities.Event.filter({ id: ticket.event_id });
-      if (events.length === 0) {
-        return { success: false, error: "Evento não encontrado" };
+      if (!ticket.event_id) {
+        throw new Error("Ingresso inválido");
       }
 
+      const events = await base44.entities.Event.filter({ id: ticket.event_id });
       const event = events[0];
-      if (event.organizer_id !== user.id) {
-        return { success: false, error: "Este ingresso não pertence aos seus eventos" };
+
+      if (!event) {
+        throw new Error("Evento não encontrado");
       }
 
       if (ticket.status === "usado") {
-        return { success: false, error: "Ingresso já foi utilizado", ticket, event };
+        return {
+          valid: false,
+          message: "Este ingresso já foi utilizado",
+          ticket,
+          event,
+        };
       }
 
       if (ticket.status === "cancelado") {
-        return { success: false, error: "Ingresso foi cancelado", ticket, event };
+        return {
+          valid: false,
+          message: "Este ingresso foi cancelado",
+          ticket,
+          event,
+        };
       }
 
-      // Validate ticket
       await base44.entities.Ticket.update(ticket.id, { status: "usado" });
 
-      // Create notification for buyer
       await base44.entities.Notification.create({
         user_id: ticket.buyer_id,
-        title: "Ingresso Validado ✓",
-        message: `Seu ingresso para ${event.title} foi validado com sucesso!`,
+        title: "Ingresso Validado ✅",
+        message: `Seu ingresso para "${event.title}" foi validado com sucesso!`,
         type: "success",
         category: "ticket",
-        link: createPageUrl("MyTickets"),
       });
 
-      return { success: true, ticket, event };
+      return {
+        valid: true,
+        message: "Ingresso validado com sucesso!",
+        ticket,
+        event,
+      };
     },
     onSuccess: (result) => {
       setValidationResult(result);
-      setIsValidating(false);
-      if (result.success) {
+      queryClient.invalidateQueries({ queryKey: ["tickets"] });
+      
+      if (result.valid) {
         toast.success("Ingresso validado com sucesso!");
-        queryClient.invalidateQueries({ queryKey: ["tickets"] });
       } else {
-        toast.error(result.error);
+        toast.error(result.message);
       }
     },
-    onError: () => {
-      setIsValidating(false);
-      toast.error("Erro ao validar ingresso");
+    onError: (error) => {
+      setValidationResult({
+        valid: false,
+        message: error.message || "Erro ao validar ingresso",
+      });
+      toast.error(error.message || "Erro ao validar ingresso");
     },
   });
 
-  const handleValidate = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!ticketCode.trim()) {
       toast.error("Digite o código do ingresso");
       return;
     }
-    setValidationResult(null);
     validateTicketMutation.mutate(ticketCode.trim());
   };
 
@@ -116,247 +126,248 @@ export default function ValidateTicket() {
     setValidationResult(null);
   };
 
-  const handleScan = (scannedCode) => {
+  const handleScan = (code) => {
     setShowScanner(false);
-    setTicketCode(scannedCode);
-    setValidationResult(null);
-    validateTicketMutation.mutate(scannedCode.trim());
+    setTicketCode(code);
+    validateTicketMutation.mutate(code);
   };
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-purple-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <Scan className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Validar Ingresso
-          </h1>
-          <p className="text-lg text-gray-600">
-            Digite ou escaneie o código do ingresso para validar a entrada
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-blue-500/90 via-blue-400/80 to-white/90 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-gray-900/90 backdrop-blur-3xl">
+        {/* Decorative blur circles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/30 dark:bg-purple-600/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/40 dark:bg-purple-900/30 rounded-full blur-3xl animate-float-reverse animate-pulse-glow"></div>
         </div>
 
-        {/* Validation Form */}
-        <Card className="border-none shadow-2xl mb-6">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-2xl mb-4 border border-white/30 dark:border-gray-700/30">
+              <CheckCircle2 className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white text-shadow-strong">
+              Validar Ingresso
+            </h1>
+            <p className="text-lg text-white/95 max-w-2xl mx-auto text-shadow-medium">
+              Escaneie ou digite o código do ingresso para validar a entrada
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Card className="border-none shadow-xl mb-8 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Código do Ingresso</CardTitle>
+            <CardTitle className="dark:text-white">Validação de Ingresso</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleValidate} className="space-y-4">
-              <div>
-                <Label htmlFor="ticketCode">
-                  Digite o código ou escaneie o QR Code
-                </Label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    id="ticketCode"
-                    placeholder="TICKET-1234567890-XXXXX"
-                    value={ticketCode}
-                    onChange={(e) => setTicketCode(e.target.value)}
-                    className="font-mono text-lg flex-1"
-                    autoFocus
-                    disabled={isValidating}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => setShowScanner(true)}
-                    variant="outline"
-                    className="px-4"
-                    disabled={isValidating}
-                  >
-                    <Camera className="w-5 h-5" />
-                  </Button>
+            {!validationResult ? (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Código do Ingresso
+                  </label>
+                  <div className="flex gap-3">
+                    <Input
+                      value={ticketCode}
+                      onChange={(e) => setTicketCode(e.target.value)}
+                      placeholder="Digite ou escaneie o código"
+                      className="flex-1 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowScanner(true)}
+                      className="gap-2 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                      <Scan className="w-4 h-4" />
+                      Escanear QR
+                    </Button>
+                  </div>
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                disabled={isValidating}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 py-6 text-lg font-semibold"
-              >
-                {isValidating ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Validando...
-                  </>
-                ) : (
-                  <>
-                    <QrCode className="w-5 h-5 mr-2" />
-                    Validar Ingresso
-                  </>
-                )}
-              </Button>
-              {validationResult && (
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleReset}
-                  className="w-full mt-2"
+                  type="submit"
+                  disabled={validateTicketMutation.isPending}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
                 >
-                  Limpar
+                  {validateTicketMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Validando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      Validar Ingresso
+                    </>
+                  )}
                 </Button>
-              )}
-            </form>
+              </form>
+            ) : (
+              <div className="space-y-6">
+                <Alert
+                  className={
+                    validationResult.valid
+                      ? "bg-green-50 border-green-200 dark:bg-orange-900/20 dark:border-orange-800"
+                      : "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800"
+                  }
+                >
+                  <div className="flex items-center gap-3">
+                    {validationResult.valid ? (
+                      <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-orange-400" />
+                    ) : (
+                      <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                    )}
+                    <div>
+                      <AlertDescription
+                        className={
+                          validationResult.valid
+                            ? "text-green-900 dark:text-orange-300 font-semibold"
+                            : "text-red-900 dark:text-red-300 font-semibold"
+                        }
+                      >
+                        {validationResult.message}
+                      </AlertDescription>
+                    </div>
+                  </div>
+                </Alert>
+
+                {validationResult.ticket && validationResult.event && (
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        Detalhes do Ingresso
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Evento</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {validationResult.event.title}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Data</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {format(
+                              new Date(validationResult.event.date),
+                              "dd/MM/yyyy 'às' HH:mm",
+                              { locale: ptBR }
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Comprador</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {validationResult.ticket.buyer_name}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Quantidade</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {validationResult.ticket.quantity} ingresso(s)
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Valor</p>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            R$ {validationResult.ticket.total_price?.toFixed(2)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Código</p>
+                          <p className="font-mono text-sm text-gray-900 dark:text-white">
+                            {validationResult.ticket.ticket_code}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleReset}
+                  variant="outline"
+                  className="w-full dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700"
+                >
+                  Validar Outro Ingresso
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Validation Result */}
-        {validationResult && (
-          <Card
-            className={`border-none shadow-2xl ${
-              validationResult.success
-                ? "bg-gradient-to-br from-green-50 to-emerald-50"
-                : "bg-gradient-to-br from-red-50 to-orange-50"
-            }`}
-          >
-            <CardContent className="p-8">
-              <div className="text-center mb-6">
-                {validationResult.success ? (
-                  <>
-                    <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 className="w-10 h-10 text-white" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-green-900 mb-2">
-                      Ingresso Válido!
-                    </h2>
-                    <p className="text-green-700">
-                      O ingresso foi validado com sucesso
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <XCircle className="w-10 h-10 text-white" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-red-900 mb-2">
-                      Ingresso Inválido
-                    </h2>
-                    <p className="text-red-700">{validationResult.error}</p>
-                  </>
-                )}
-              </div>
-
-              {validationResult.ticket && validationResult.event && (
-                <div className="space-y-4 mt-6">
-                  <div className="bg-white rounded-xl p-6 shadow-md space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <TicketIcon className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-500">Evento</p>
-                        <p className="font-semibold text-gray-900">
-                          {validationResult.event.title}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-500">Data do Evento</p>
-                        <p className="font-medium text-gray-900">
-                          {format(
-                            new Date(validationResult.event.date),
-                            "dd/MM/yyyy 'às' HH:mm",
-                            { locale: ptBR }
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <User className="w-5 h-5 text-green-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-500">Comprador</p>
-                        <p className="font-medium text-gray-900">
-                          {validationResult.ticket.buyer_name}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {validationResult.ticket.buyer_email}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <TicketIcon className="w-5 h-5 text-orange-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-500">Quantidade</p>
-                        <p className="font-semibold text-gray-900">
-                          {validationResult.ticket.quantity} ingresso(s)
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-gray-200">
-                      <p className="text-xs text-gray-500 mb-1">Código do Ingresso</p>
-                      <p className="text-sm font-mono font-semibold text-gray-900 break-all">
-                        {validationResult.ticket.ticket_code}
-                      </p>
-                    </div>
-
-                    {!validationResult.success && (
-                      <Alert className="bg-red-50 border-red-200">
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-red-800">
-                          {validationResult.error}
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         {/* Instructions */}
-        <Card className="border-none shadow-lg mt-6 bg-blue-50">
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-blue-600" />
-              Instruções
-            </h3>
-            <ul className="space-y-2 text-sm text-gray-700">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">•</span>
-                <span>Digite o código do ingresso manualmente ou clique no ícone da câmera para escanear o QR Code</span>
+        <Card className="border-none shadow-lg dark:bg-gray-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 dark:text-white">
+              <AlertCircle className="w-5 h-5 text-blue-600 dark:text-purple-400" />
+              Como Validar Ingressos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="space-y-3 text-gray-700 dark:text-gray-300">
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-purple-900/40 text-blue-600 dark:text-purple-400 rounded-full flex items-center justify-center text-sm font-semibold">
+                  1
+                </span>
+                <span>
+                  <strong>Solicite o ingresso:</strong> Peça ao participante para apresentar o
+                  QR Code ou código do ingresso
+                </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">•</span>
-                <span>Cada ingresso só pode ser validado uma vez</span>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-purple-900/40 text-blue-600 dark:text-purple-400 rounded-full flex items-center justify-center text-sm font-semibold">
+                  2
+                </span>
+                <span>
+                  <strong>Escaneie ou digite:</strong> Use a câmera para escanear o QR Code
+                  ou digite o código manualmente
+                </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">•</span>
-                <span>Você só pode validar ingressos dos seus próprios eventos</span>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-purple-900/40 text-blue-600 dark:text-purple-400 rounded-full flex items-center justify-center text-sm font-semibold">
+                  3
+                </span>
+                <span>
+                  <strong>Verifique o resultado:</strong> Aguarde a validação e confira se
+                  o ingresso é válido
+                </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600">•</span>
-                <span>O comprador receberá uma notificação quando o ingresso for validado</span>
+              <li className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-purple-900/40 text-blue-600 dark:text-purple-400 rounded-full flex items-center justify-center text-sm font-semibold">
+                  4
+                </span>
+                <span>
+                  <strong>Libere a entrada:</strong> Se o ingresso for válido, permita a
+                  entrada do participante
+                </span>
               </li>
-            </ul>
+            </ol>
+
+            <Alert className="mt-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+              <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+              <AlertDescription className="text-sm text-yellow-900 dark:text-yellow-300">
+                <strong>Importante:</strong> Cada ingresso só pode ser validado uma vez.
+                Após a validação, ele não poderá ser usado novamente.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
       </div>
 
-      {/* QR Scanner Modal */}
+      {/* QR Scanner */}
       {showScanner && (
         <QRScanner
           onScan={handleScan}

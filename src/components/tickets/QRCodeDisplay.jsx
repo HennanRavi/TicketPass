@@ -4,19 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Download, Maximize2, QrCode as QrCodeIcon, Eye, EyeOff } from "lucide-react";
 
-export default function QRCodeDisplay({ ticketCode, eventTitle, size = 200 }) {
+export default function QRCodeDisplay({ value, ticketCode, eventTitle, size = 200 }) {
   const [showFullscreen, setShowFullscreen] = useState(false);
   const [showCode, setShowCode] = useState(false);
   
+  // Use value prop or fallback to ticketCode
+  const code = value || ticketCode || "";
+  
+  if (!code) {
+    return null;
+  }
+  
   // Using QR Server API to generate QR codes
   const getQRCodeUrl = (codeSize) => {
-    return `https://api.qrserver.com/v1/create-qr-code/?size=${codeSize}x${codeSize}&data=${encodeURIComponent(ticketCode)}`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=${codeSize}x${codeSize}&data=${encodeURIComponent(code)}`;
   };
 
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = getQRCodeUrl(800);
-    link.download = `ticket-${ticketCode}.png`;
+    link.download = `ticket-${code}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -30,7 +37,7 @@ export default function QRCodeDisplay({ ticketCode, eventTitle, size = 200 }) {
             <div className="relative">
               <img
                 src={getQRCodeUrl(size)}
-                alt={`QR Code - ${ticketCode}`}
+                alt={`QR Code - ${code}`}
                 className="w-full h-full rounded-lg border-4 border-gray-100"
               />
             </div>
@@ -40,7 +47,7 @@ export default function QRCodeDisplay({ ticketCode, eventTitle, size = 200 }) {
                 <p className="text-xs text-gray-500 mb-1">Código do Ingresso</p>
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-sm font-mono font-semibold text-gray-900 break-all">
-                    {showCode ? ticketCode : "•".repeat(Math.min(ticketCode.length, 30))}
+                    {showCode ? code : "•".repeat(Math.min(code.length, 30))}
                   </p>
                   <Button
                     variant="ghost"
@@ -94,20 +101,22 @@ export default function QRCodeDisplay({ ticketCode, eventTitle, size = 200 }) {
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col items-center gap-4 py-4">
-            <div className="text-center mb-2">
-              <p className="text-sm text-gray-500 mb-1">Evento</p>
-              <p className="font-semibold text-gray-900">{eventTitle}</p>
-            </div>
+            {eventTitle && (
+              <div className="text-center mb-2">
+                <p className="text-sm text-gray-500 mb-1">Evento</p>
+                <p className="font-semibold text-gray-900">{eventTitle}</p>
+              </div>
+            )}
             <img
               src={getQRCodeUrl(400)}
-              alt={`QR Code - ${ticketCode}`}
+              alt={`QR Code - ${code}`}
               className="w-full max-w-md rounded-lg border-4 border-gray-100"
             />
             <div className="text-center">
               <p className="text-xs text-gray-500 mb-1">Código</p>
               <div className="flex items-center justify-center gap-2">
                 <p className="text-sm font-mono font-semibold text-gray-900 break-all">
-                  {showCode ? ticketCode : "•".repeat(Math.min(ticketCode.length, 30))}
+                  {showCode ? code : "•".repeat(Math.min(code.length, 30))}
                 </p>
                 <Button
                   variant="ghost"

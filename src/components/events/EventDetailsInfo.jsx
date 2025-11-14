@@ -18,13 +18,13 @@ const categoryLabels = {
 
 export default function EventDetailsInfo({ event, organizer, availableTickets }) {
   return (
-    <Card className="border-none shadow-lg">
+    <Card className="border-none shadow-lg dark:bg-gray-800">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-3xl mb-2">{event.title}</CardTitle>
+            <CardTitle className="text-3xl mb-2 dark:text-white">{event.title}</CardTitle>
             {event.category && (
-              <Badge className="bg-blue-100 text-blue-700">
+              <Badge className="bg-blue-100 text-blue-700 dark:bg-purple-900/40 dark:text-purple-300">
                 {categoryLabels[event.category] || event.category}
               </Badge>
             )}
@@ -32,13 +32,13 @@ export default function EventDetailsInfo({ event, organizer, availableTickets })
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-3 text-gray-700">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+          <div className="w-10 h-10 bg-blue-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-blue-600 dark:text-purple-400" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Data e Hora</p>
-            <p className="font-medium">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Data e Hora</p>
+            <p className="font-medium dark:text-white">
               {format(new Date(event.date), "dd 'de' MMMM, yyyy 'às' HH:mm", {
                 locale: ptBR,
               })}
@@ -46,25 +46,25 @@ export default function EventDetailsInfo({ event, organizer, availableTickets })
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-gray-700">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <MapPin className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+          <div className="w-10 h-10 bg-blue-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
+            <MapPin className="w-5 h-5 text-blue-600 dark:text-purple-400" />
           </div>
           <div>
-            <p className="text-sm text-gray-500">Localização</p>
-            <p className="font-medium">{event.location}</p>
-            <p className="text-sm text-gray-600">{event.city}, {event.state}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Localização</p>
+            <p className="font-medium dark:text-white">{event.location}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{event.city}, {event.state}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-gray-700">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <User className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+          <div className="w-10 h-10 bg-blue-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
+            <User className="w-5 h-5 text-blue-600 dark:text-purple-400" />
           </div>
           <div className="flex-1">
-            <p className="text-sm text-gray-500">Organizador</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Organizador</p>
             <div className="flex items-center gap-2">
-              <p className="font-medium">{event.organizer_name || "Não informado"}</p>
+              <p className="font-medium dark:text-white">{event.organizer_name || "Não informado"}</p>
               {organizer && organizer.organizer_reviews_count > 0 && (
                 <OrganizerRating organizer={organizer} compact />
               )}
@@ -72,18 +72,18 @@ export default function EventDetailsInfo({ event, organizer, availableTickets })
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-gray-700">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Users className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+          <div className="w-10 h-10 bg-blue-100 dark:bg-purple-900/40 rounded-lg flex items-center justify-center">
+            <Users className="w-5 h-5 text-blue-600 dark:text-purple-400" />
           </div>
-          <div>
-            <p className="text-sm text-gray-500">Disponibilidade</p>
-            <p className="font-medium">
+          <div className="flex-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Disponibilidade</p>
+            <p className="font-medium dark:text-white">
               {availableTickets} de {event.capacity} ingressos disponíveis
             </p>
-            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
               <div 
-                className="bg-blue-600 h-2 rounded-full transition-all"
+                className="bg-blue-600 dark:bg-purple-500 h-2 rounded-full transition-all"
                 style={{ width: `${((event.tickets_sold || 0) / event.capacity) * 100}%` }}
               />
             </div>

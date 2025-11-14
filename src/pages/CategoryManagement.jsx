@@ -258,8 +258,8 @@ export default function CategoryManagement() {
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-purple-400"></div>
       </div>
     );
   }
@@ -269,20 +269,27 @@ export default function CategoryManagement() {
   };
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-blue-500/90 via-blue-400/80 to-white/90 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-gray-900/90 backdrop-blur-3xl">
+        {/* Decorative blur circles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/30 dark:bg-purple-600/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/40 dark:bg-purple-900/30 rounded-full blur-3xl animate-float-reverse animate-pulse-glow"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/30 dark:border-gray-700/30">
                 <FolderTree className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-4xl md:text-5xl font-bold text-white text-shadow-strong">
                   Gerenciar Categorias
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-white/95 text-shadow-medium">
                   Organize as categorias de eventos da plataforma
                 </p>
               </div>
@@ -292,7 +299,7 @@ export default function CategoryManagement() {
                 resetForm();
                 setShowCreateDialog(true);
               }}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+              className="bg-white text-green-600 hover:bg-gray-50 dark:text-orange-600 shadow-lg"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nova Categoria
@@ -301,67 +308,64 @@ export default function CategoryManagement() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border-none shadow-lg">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Tag className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {categories.length}
-                    </p>
-                    <p className="text-sm text-gray-600">Total de Categorias</p>
-                  </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-600 dark:bg-purple-600 rounded-lg flex items-center justify-center">
+                  <Tag className="w-5 h-5 text-white" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-2xl font-bold text-white text-shadow-medium">
+                    {categories.length}
+                  </p>
+                  <p className="text-sm text-white/95 text-shadow-soft">Total de Categorias</p>
+                </div>
+              </div>
+            </div>
 
-            <Card className="border-none shadow-lg">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Check className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {categories.filter((c) => c.active).length}
-                    </p>
-                    <p className="text-sm text-gray-600">Categorias Ativas</p>
-                  </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-600 dark:bg-orange-600 rounded-lg flex items-center justify-center">
+                  <Check className="w-5 h-5 text-white" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-2xl font-bold text-white text-shadow-medium">
+                    {categories.filter((c) => c.active).length}
+                  </p>
+                  <p className="text-sm text-white/95 text-shadow-soft">Categorias Ativas</p>
+                </div>
+              </div>
+            </div>
 
-            <Card className="border-none shadow-lg">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <FolderTree className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-gray-900">
-                      {events.length}
-                    </p>
-                    <p className="text-sm text-gray-600">Eventos Cadastrados</p>
-                  </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-600 dark:bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <FolderTree className="w-5 h-5 text-white" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-2xl font-bold text-white text-shadow-medium">
+                    {events.length}
+                  </p>
+                  <p className="text-sm text-white/95 text-shadow-soft">Eventos Cadastrados</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardContent className="p-4">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                 <Input
                   placeholder="Buscar categorias..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
               <div className="flex gap-2">
@@ -369,6 +373,7 @@ export default function CategoryManagement() {
                   variant={sortOrder === "name" ? "default" : "outline"}
                   onClick={() => setSortOrder("name")}
                   size="sm"
+                  className={sortOrder === "name" ? "dark:bg-purple-600" : "dark:border-gray-700 dark:text-gray-300"}
                 >
                   <ArrowUpDown className="w-4 h-4 mr-2" />
                   Nome
@@ -377,6 +382,7 @@ export default function CategoryManagement() {
                   variant={sortOrder === "order" ? "default" : "outline"}
                   onClick={() => setSortOrder("order")}
                   size="sm"
+                  className={sortOrder === "order" ? "dark:bg-purple-600" : "dark:border-gray-700 dark:text-gray-300"}
                 >
                   <ArrowUpDown className="w-4 h-4 mr-2" />
                   Ordem
@@ -385,6 +391,7 @@ export default function CategoryManagement() {
                   variant={sortOrder === "created" ? "default" : "outline"}
                   onClick={() => setSortOrder("created")}
                   size="sm"
+                  className={sortOrder === "created" ? "dark:bg-purple-600" : "dark:border-gray-700 dark:text-gray-300"}
                 >
                   <ArrowUpDown className="w-4 h-4 mr-2" />
                   Recentes
@@ -395,25 +402,25 @@ export default function CategoryManagement() {
         </Card>
 
         {/* Categories Table */}
-        <Card className="border-none shadow-lg">
+        <Card className="border-none shadow-lg dark:bg-gray-800">
           <CardContent className="p-0">
             {filteredCategories.length > 0 ? (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Descrição</TableHead>
-                      <TableHead className="text-center">Eventos</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-center">Ordem</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                    <TableRow className="dark:border-gray-700">
+                      <TableHead className="dark:text-gray-300">Categoria</TableHead>
+                      <TableHead className="dark:text-gray-300">Slug</TableHead>
+                      <TableHead className="dark:text-gray-300">Descrição</TableHead>
+                      <TableHead className="text-center dark:text-gray-300">Eventos</TableHead>
+                      <TableHead className="text-center dark:text-gray-300">Status</TableHead>
+                      <TableHead className="text-center dark:text-gray-300">Ordem</TableHead>
+                      <TableHead className="text-right dark:text-gray-300">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredCategories.map((category) => (
-                      <TableRow key={category.id}>
+                      <TableRow key={category.id} className="dark:border-gray-700">
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {category.icon && (
@@ -423,34 +430,34 @@ export default function CategoryManagement() {
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: category.color || "#3B82F6" }}
                             ></div>
-                            <span className="font-medium">{category.name}</span>
+                            <span className="font-medium dark:text-white">{category.name}</span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded dark:text-gray-300">
                             {category.slug}
                           </code>
                         </TableCell>
-                        <TableCell className="max-w-xs truncate">
+                        <TableCell className="max-w-xs truncate dark:text-gray-300">
                           {category.description || "-"}
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="dark:border-gray-700 dark:text-gray-300">
                             {getEventsCount(category.slug)} eventos
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
                           {category.active ? (
-                            <Badge className="bg-green-100 text-green-700">
+                            <Badge className="bg-green-100 text-green-700 dark:bg-orange-900/40 dark:text-orange-400">
                               Ativa
                             </Badge>
                           ) : (
-                            <Badge className="bg-gray-100 text-gray-700">
+                            <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                               Inativa
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="text-center dark:text-gray-300">
                           {category.order || 0}
                         </TableCell>
                         <TableCell className="text-right">
@@ -459,6 +466,7 @@ export default function CategoryManagement() {
                               variant="ghost"
                               size="icon"
                               onClick={() => openEditDialog(category)}
+                              className="dark:hover:bg-gray-700"
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -466,7 +474,7 @@ export default function CategoryManagement() {
                               variant="ghost"
                               size="icon"
                               onClick={() => openDeleteDialog(category)}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -479,17 +487,17 @@ export default function CategoryManagement() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <FolderTree className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <FolderTree className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   Nenhuma categoria encontrada
                 </h3>
-                <p className="text-gray-500 mb-4">
+                <p className="text-gray-500 dark:text-gray-400 mb-4">
                   {searchTerm
                     ? "Tente ajustar sua busca"
                     : "Comece criando sua primeira categoria"}
                 </p>
                 {!searchTerm && (
-                  <Button onClick={() => setShowCreateDialog(true)}>
+                  <Button onClick={() => setShowCreateDialog(true)} className="dark:bg-purple-600 dark:hover:bg-purple-700">
                     <Plus className="w-4 h-4 mr-2" />
                     Nova Categoria
                   </Button>
@@ -502,37 +510,39 @@ export default function CategoryManagement() {
 
       {/* Create Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
-            <DialogTitle>Criar Nova Categoria</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="dark:text-white">Criar Nova Categoria</DialogTitle>
+            <DialogDescription className="dark:text-gray-400">
               Preencha os dados para criar uma nova categoria de eventos
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="create-name">Nome da Categoria *</Label>
+              <Label htmlFor="create-name" className="dark:text-gray-300">Nome da Categoria *</Label>
               <Input
                 id="create-name"
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
                 placeholder="Ex: Shows"
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <Label htmlFor="create-slug">Slug *</Label>
+              <Label htmlFor="create-slug" className="dark:text-gray-300">Slug *</Label>
               <Input
                 id="create-slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="Ex: shows"
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Gerado automaticamente a partir do nome
               </p>
             </div>
             <div>
-              <Label htmlFor="create-description">Descrição</Label>
+              <Label htmlFor="create-description" className="dark:text-gray-300">Descrição</Label>
               <Textarea
                 id="create-description"
                 value={formData.description}
@@ -541,20 +551,22 @@ export default function CategoryManagement() {
                 }
                 placeholder="Descreva esta categoria..."
                 rows={3}
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="create-icon">Ícone (Emoji)</Label>
+                <Label htmlFor="create-icon" className="dark:text-gray-300">Ícone (Emoji)</Label>
                 <Input
                   id="create-icon"
                   value={formData.icon}
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                   placeholder="🎵"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="create-color">Cor</Label>
+                <Label htmlFor="create-color" className="dark:text-gray-300">Cor</Label>
                 <div className="flex gap-2">
                   <Input
                     id="create-color"
@@ -563,7 +575,7 @@ export default function CategoryManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, color: e.target.value })
                     }
-                    className="w-20 h-10"
+                    className="w-20 h-10 dark:bg-gray-900 dark:border-gray-700"
                   />
                   <Input
                     value={formData.color}
@@ -571,12 +583,13 @@ export default function CategoryManagement() {
                       setFormData({ ...formData, color: e.target.value })
                     }
                     placeholder="#3B82F6"
+                    className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
             </div>
             <div>
-              <Label htmlFor="create-order">Ordem de Exibição</Label>
+              <Label htmlFor="create-order" className="dark:text-gray-300">Ordem de Exibição</Label>
               <Input
                 id="create-order"
                 type="number"
@@ -584,17 +597,18 @@ export default function CategoryManagement() {
                 onChange={(e) =>
                   setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
                 }
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)} className="dark:border-gray-700 dark:text-gray-300">
               Cancelar
             </Button>
             <Button
               onClick={handleCreate}
               disabled={createCategoryMutation.isPending}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
             >
               {createCategoryMutation.isPending ? "Criando..." : "Criar Categoria"}
             </Button>
@@ -604,34 +618,36 @@ export default function CategoryManagement() {
 
       {/* Edit Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
-            <DialogTitle>Editar Categoria</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="dark:text-white">Editar Categoria</DialogTitle>
+            <DialogDescription className="dark:text-gray-400">
               Atualize as informações da categoria
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label htmlFor="edit-name">Nome da Categoria *</Label>
+              <Label htmlFor="edit-name" className="dark:text-gray-300">Nome da Categoria *</Label>
               <Input
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Ex: Shows"
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <Label htmlFor="edit-slug">Slug *</Label>
+              <Label htmlFor="edit-slug" className="dark:text-gray-300">Slug *</Label>
               <Input
                 id="edit-slug"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                 placeholder="Ex: shows"
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div>
-              <Label htmlFor="edit-description">Descrição</Label>
+              <Label htmlFor="edit-description" className="dark:text-gray-300">Descrição</Label>
               <Textarea
                 id="edit-description"
                 value={formData.description}
@@ -640,20 +656,22 @@ export default function CategoryManagement() {
                 }
                 placeholder="Descreva esta categoria..."
                 rows={3}
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-icon">Ícone (Emoji)</Label>
+                <Label htmlFor="edit-icon" className="dark:text-gray-300">Ícone (Emoji)</Label>
                 <Input
                   id="edit-icon"
                   value={formData.icon}
                   onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
                   placeholder="🎵"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-color">Cor</Label>
+                <Label htmlFor="edit-color" className="dark:text-gray-300">Cor</Label>
                 <div className="flex gap-2">
                   <Input
                     id="edit-color"
@@ -662,7 +680,7 @@ export default function CategoryManagement() {
                     onChange={(e) =>
                       setFormData({ ...formData, color: e.target.value })
                     }
-                    className="w-20 h-10"
+                    className="w-20 h-10 dark:bg-gray-900 dark:border-gray-700"
                   />
                   <Input
                     value={formData.color}
@@ -670,12 +688,13 @@ export default function CategoryManagement() {
                       setFormData({ ...formData, color: e.target.value })
                     }
                     placeholder="#3B82F6"
+                    className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
             </div>
             <div>
-              <Label htmlFor="edit-order">Ordem de Exibição</Label>
+              <Label htmlFor="edit-order" className="dark:text-gray-300">Ordem de Exibição</Label>
               <Input
                 id="edit-order"
                 type="number"
@@ -683,6 +702,7 @@ export default function CategoryManagement() {
                 onChange={(e) =>
                   setFormData({ ...formData, order: parseInt(e.target.value) || 0 })
                 }
+                className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -695,17 +715,17 @@ export default function CategoryManagement() {
                 }
                 className="w-4 h-4"
               />
-              <Label htmlFor="edit-active">Categoria ativa</Label>
+              <Label htmlFor="edit-active" className="dark:text-gray-300">Categoria ativa</Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)} className="dark:border-gray-700 dark:text-gray-300">
               Cancelar
             </Button>
             <Button
               onClick={handleEdit}
               disabled={updateCategoryMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700"
             >
               {updateCategoryMutation.isPending ? "Salvando..." : "Salvar Alterações"}
             </Button>
@@ -715,44 +735,44 @@ export default function CategoryManagement() {
 
       {/* Delete Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
-              Confirmar Exclusão
+              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <span className="dark:text-white">Confirmar Exclusão</span>
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="dark:text-gray-400">
               Tem certeza que deseja excluir esta categoria?
             </DialogDescription>
           </DialogHeader>
           {selectedCategory && (
             <div className="py-4">
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
                 <div className="flex items-center gap-2 mb-2">
                   {selectedCategory.icon && (
                     <span className="text-2xl">{selectedCategory.icon}</span>
                   )}
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-gray-900 dark:text-white">
                     {selectedCategory.name}
                   </p>
                 </div>
-                <p className="text-sm text-gray-600">
-                  Slug: <code className="bg-white px-2 py-1 rounded">{selectedCategory.slug}</code>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Slug: <code className="bg-white dark:bg-gray-800 px-2 py-1 rounded dark:text-gray-300">{selectedCategory.slug}</code>
                 </p>
               </div>
 
               {getEventsCount(selectedCategory.slug) > 0 ? (
-                <Alert className="bg-red-50 border-red-200">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <AlertDescription className="text-red-800">
+                <Alert className="bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800">
+                  <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <AlertDescription className="text-red-800 dark:text-red-300">
                     Esta categoria possui{" "}
                     <strong>{getEventsCount(selectedCategory.slug)} evento(s)</strong>{" "}
                     associado(s). Não é possível excluí-la.
                   </AlertDescription>
                 </Alert>
               ) : (
-                <Alert>
-                  <AlertDescription>
+                <Alert className="dark:bg-gray-900 dark:border-gray-700">
+                  <AlertDescription className="dark:text-gray-300">
                     Esta ação não pode ser desfeita. A categoria será removida
                     permanentemente.
                   </AlertDescription>
@@ -761,7 +781,7 @@ export default function CategoryManagement() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)} className="dark:border-gray-700 dark:text-gray-300">
               Cancelar
             </Button>
             <Button
@@ -770,7 +790,7 @@ export default function CategoryManagement() {
                 deleteCategoryMutation.isPending ||
                 (selectedCategory && getEventsCount(selectedCategory.slug) > 0)
               }
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
             >
               {deleteCategoryMutation.isPending ? "Excluindo..." : "Excluir Categoria"}
             </Button>

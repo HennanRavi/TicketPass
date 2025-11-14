@@ -27,6 +27,8 @@ export const AdminBankAccount = base44.entities.AdminBankAccount;
 
 export const PaymentTransaction = base44.entities.PaymentTransaction;
 
+export const Report = base44.entities.Report;
+
 
 
 // auth sdk:

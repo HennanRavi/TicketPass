@@ -254,33 +254,33 @@ export default function UserSettings() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-purple-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
+    <div className="min-h-screen py-8 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Configurações do Perfil</h1>
-          <p className="text-gray-600">Gerencie suas informações pessoais</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Configurações do Perfil</h1>
+          <p className="text-gray-600 dark:text-gray-400">Gerencie suas informações pessoais</p>
         </div>
 
-        <Card className="border-none shadow-xl">
+        <Card className="border-none shadow-xl dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 dark:text-white">
               <User className="w-5 h-5" />
               Informações Pessoais
             </CardTitle>
             <div className="mt-2">
               <Badge className={
                 user?.role === "admin" 
-                  ? "bg-purple-100 text-purple-700" 
+                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300" 
                   : user?.user_type === "organizador"
-                    ? "bg-blue-100 text-blue-700" 
-                    : "bg-green-100 text-green-700"
+                    ? "bg-blue-100 text-blue-700 dark:bg-indigo-900/40 dark:text-indigo-300" 
+                    : "bg-green-100 text-green-700 dark:bg-orange-900/40 dark:text-orange-300"
               }>
                 {user?.role === "admin" 
                   ? "👑 Administrador" 
@@ -289,27 +289,27 @@ export default function UserSettings() {
                     : "🎉 Participante"}
               </Badge>
             </div>
-            <CardDescription>
+            <CardDescription className="dark:text-gray-400">
               Atualize seus dados e foto de perfil
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Profile Image */}
-              <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-200">
+              <div className="flex flex-col items-center gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="relative">
                   {formData.profile_image ? (
                     <img
                       src={formData.profile_image}
                       alt="Profile"
-                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-100"
+                      className="w-32 h-32 rounded-full object-cover border-4 border-blue-100 dark:border-purple-800"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-purple-700 dark:to-indigo-800 flex items-center justify-center">
                       <User className="w-16 h-16 text-white" />
                     </div>
                   )}
-                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors shadow-lg">
+                  <label className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 dark:bg-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors shadow-lg">
                     {isUploading ? (
                       <Loader2 className="w-5 h-5 text-white animate-spin" />
                     ) : (
@@ -325,22 +325,22 @@ export default function UserSettings() {
                   </label>
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-gray-900">{user.display_name || user.full_name}</p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{user.display_name || user.full_name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
                 </div>
               </div>
 
-              <Alert className="bg-blue-50 border-blue-200">
-                <AlertCircle className="h-4 w-4 text-blue-600" />
-                <AlertDescription className="text-xs text-blue-900">
+              <Alert className="bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+                <AlertCircle className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+                <AlertDescription className="text-xs text-blue-900 dark:text-purple-300">
                   Sua foto de perfil será validada automaticamente. Imagens inapropriadas serão rejeitadas.
                 </AlertDescription>
               </Alert>
 
               {/* Display Name */}
               <div>
-                <Label htmlFor="display_name" className="flex items-center gap-2 mb-2">
-                  <User className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="display_name" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                  <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Nome de Exibição *
                 </Label>
                 <Input
@@ -351,16 +351,17 @@ export default function UserSettings() {
                   }
                   required
                   placeholder="Como você quer ser chamado"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Este nome será exibido em todo o sistema
                 </p>
               </div>
 
               {/* Email (readonly) */}
               <div>
-                <Label htmlFor="email" className="flex items-center gap-2 mb-2">
-                  <Mail className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="email" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                  <Mail className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Email
                 </Label>
                 <Input
@@ -368,17 +369,17 @@ export default function UserSettings() {
                   type="email"
                   value={formData.email}
                   disabled
-                  className="bg-gray-100"
+                  className="bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   O email não pode ser alterado
                 </p>
               </div>
 
               {/* Phone */}
               <div>
-                <Label htmlFor="phone" className="flex items-center gap-2 mb-2">
-                  <Phone className="w-4 h-4 text-gray-500" />
+                <Label htmlFor="phone" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                  <Phone className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Telefone (opcional)
                 </Label>
                 <Input
@@ -389,8 +390,9 @@ export default function UserSettings() {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="(11) 98765-4321 ou 11987654321"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Aceita vários formatos: (11) 98765-4321, 11987654321, etc.
                 </p>
               </div>
@@ -398,8 +400,8 @@ export default function UserSettings() {
               {/* Type Selection for non-admin users */}
               {user.role !== "admin" && (
                 <div>
-                  <Label htmlFor="user_type" className="flex items-center gap-2 mb-2">
-                    <User className="w-4 h-4 text-gray-500" />
+                  <Label htmlFor="user_type" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                    <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     Tipo de Perfil
                   </Label>
                   <select
@@ -408,12 +410,12 @@ export default function UserSettings() {
                     onChange={(e) =>
                       setFormData({ ...formData, user_type: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-600 dark:bg-gray-900 dark:text-white"
                   >
                     <option value="participante">🎉 Participante - Comprar ingressos e participar de eventos</option>
                     <option value="organizador">👔 Organizador - Criar e gerenciar eventos</option>
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {formData.user_type === "organizador" 
                       ? "Como organizador, você pode criar e gerenciar eventos" 
                       : "Como participante, você pode comprar ingressos e participar de eventos"}
@@ -423,8 +425,8 @@ export default function UserSettings() {
 
               {/* Admin Badge */}
               {user.role === "admin" && (
-                <Alert className="bg-purple-50 border-purple-200">
-                  <AlertDescription className="text-sm text-purple-900">
+                <Alert className="bg-purple-50 border-purple-200 dark:bg-purple-900/20 dark:border-purple-800">
+                  <AlertDescription className="text-sm text-purple-900 dark:text-purple-300">
                     👑 Você é o <strong>Administrador</strong> da plataforma
                   </AlertDescription>
                 </Alert>
@@ -436,14 +438,14 @@ export default function UserSettings() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate(createPageUrl("Home"))}
-                  className="flex-1"
+                  className="flex-1 dark:border-gray-700 dark:text-gray-300"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={updateUserMutation.isPending || isValidating}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
                 >
                   {isValidating ? (
                     <>
@@ -469,13 +471,13 @@ export default function UserSettings() {
 
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent>
+          <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-blue-600" />
+              <DialogTitle className="flex items-center gap-2 dark:text-white">
+                <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-purple-400" />
                 Confirmar Alterações
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="dark:text-gray-400">
                 Deseja confirmar as alterações no seu perfil?
               </DialogDescription>
             </DialogHeader>
@@ -484,41 +486,41 @@ export default function UserSettings() {
               <div className="py-4 space-y-4">
                 {/* Show changes */}
                 {pendingData.display_name !== (user.display_name || user.full_name) && (
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <p className="text-sm font-medium text-gray-900 mb-2">Nome:</p>
+                  <div className="bg-blue-50 dark:bg-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-purple-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Nome:</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500 line-through">{user.display_name || user.full_name}</span>
+                      <span className="text-gray-500 dark:text-gray-400 line-through">{user.display_name || user.full_name}</span>
                       <span className="text-gray-400">→</span>
-                      <span className="text-blue-600 font-medium">{pendingData.display_name}</span>
+                      <span className="text-blue-600 dark:text-purple-400 font-medium">{pendingData.display_name}</span>
                     </div>
                   </div>
                 )}
 
                 {pendingData.profile_image !== user.profile_image && (
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <p className="text-sm font-medium text-gray-900 mb-3">Foto de Perfil:</p>
+                  <div className="bg-blue-50 dark:bg-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-purple-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-3">Foto de Perfil:</p>
                     <div className="flex items-center gap-4">
                       <div>
-                        <p className="text-xs text-gray-500 mb-2">Anterior</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Anterior</p>
                         {user.profile_image ? (
                           <img
                             src={user.profile_image}
                             alt="Anterior"
-                            className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
+                            className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
                           />
                         ) : (
-                          <div className="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center">
-                            <User className="w-8 h-8 text-gray-500" />
+                          <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                            <User className="w-8 h-8 text-gray-500 dark:text-gray-400" />
                           </div>
                         )}
                       </div>
                       <span className="text-gray-400">→</span>
                       <div>
-                        <p className="text-xs text-gray-500 mb-2">Nova</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Nova</p>
                         <img
                           src={pendingData.profile_image}
                           alt="Nova"
-                          className="w-16 h-16 rounded-full object-cover border-2 border-blue-600"
+                          className="w-16 h-16 rounded-full object-cover border-2 border-blue-600 dark:border-purple-600"
                         />
                       </div>
                     </div>
@@ -526,34 +528,34 @@ export default function UserSettings() {
                 )}
 
                 {pendingData.phone !== user.phone && (
-                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                    <p className="text-sm font-medium text-gray-900 mb-2">Telefone:</p>
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Telefone:</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">{user.phone || "(não definido)"}</span>
+                      <span className="text-gray-500 dark:text-gray-400">{user.phone || "(não definido)"}</span>
                       <span className="text-gray-400">→</span>
-                      <span className="text-green-700 font-medium">{pendingData.phone || "(não definido)"}</span>
+                      <span className="text-green-700 dark:text-green-400 font-medium">{pendingData.phone || "(não definido)"}</span>
                     </div>
                   </div>
                 )}
 
                 {pendingData.user_type !== user.user_type && (
-                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                    <p className="text-sm font-medium text-gray-900 mb-2">Tipo de Perfil:</p>
+                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Tipo de Perfil:</p>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-gray-500">
+                      <span className="text-gray-500 dark:text-gray-400">
                         {user.user_type === "organizador" ? "👔 Organizador" : "🎉 Participante"}
                       </span>
                       <span className="text-gray-400">→</span>
-                      <span className="text-purple-700 font-medium">
+                      <span className="text-purple-700 dark:text-purple-400 font-medium">
                         {pendingData.user_type === "organizador" ? "👔 Organizador" : "🎉 Participante"}
                       </span>
                     </div>
                   </div>
                 )}
 
-                <Alert className="bg-yellow-50 border-yellow-200">
-                  <AlertCircle className="h-4 w-4 text-yellow-600" />
-                  <AlertDescription className="text-sm text-yellow-900">
+                <Alert className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
+                  <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                  <AlertDescription className="text-sm text-yellow-900 dark:text-yellow-300">
                     Após confirmar, as alterações serão aplicadas imediatamente.
                   </AlertDescription>
                 </Alert>
@@ -568,13 +570,14 @@ export default function UserSettings() {
                   setPendingData(null);
                 }}
                 disabled={updateUserMutation.isPending}
+                className="dark:border-gray-700 dark:text-gray-300"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleConfirmUpdate}
                 disabled={updateUserMutation.isPending}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
               >
                 {updateUserMutation.isPending ? (
                   <>

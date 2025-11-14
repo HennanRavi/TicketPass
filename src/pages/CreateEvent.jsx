@@ -252,27 +252,27 @@ export default function CreateEvent() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-purple-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8">
+    <div className="min-h-screen py-8 bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          className="mb-6"
+          className="mb-6 dark:text-gray-300 dark:hover:bg-gray-800"
           onClick={() => navigate(createPageUrl("OrganizerDashboard"))}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
 
-        <Card className="border-none shadow-xl">
+        <Card className="border-none shadow-xl dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl dark:text-white">
               {eventId ? "Editar Evento" : "Criar Novo Evento"}
             </CardTitle>
           </CardHeader>
@@ -280,10 +280,10 @@ export default function CreateEvent() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Image Upload */}
               <div>
-                <Label>Imagem do Evento</Label>
-                <Alert className="bg-blue-50 border-blue-200 mt-2 mb-3">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-xs text-blue-900">
+                <Label className="dark:text-gray-300">Imagem do Evento</Label>
+                <Alert className="bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800 mt-2 mb-3">
+                  <AlertCircle className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+                  <AlertDescription className="text-xs text-blue-900 dark:text-purple-300">
                     Use uma imagem adequada para seu evento. Conteúdo ofensivo ou explícito será rejeitado.
                   </AlertDescription>
                 </Alert>
@@ -293,9 +293,9 @@ export default function CreateEvent() {
                       <img
                         src={formData.image_url}
                         alt="Preview"
-                        className="w-full h-64 object-cover rounded-xl border-2 border-green-200"
+                        className="w-full h-64 object-cover rounded-xl border-2 border-green-200 dark:border-orange-700"
                       />
-                      <div className="absolute top-3 left-3 bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg">
+                      <div className="absolute top-3 left-3 bg-green-500 dark:bg-orange-600 text-white px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         Imagem Validada
                       </div>
@@ -303,32 +303,32 @@ export default function CreateEvent() {
                         type="button"
                         variant="secondary"
                         size="sm"
-                        className="absolute top-3 right-3 shadow-lg"
+                        className="absolute top-3 right-3 shadow-lg dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                         onClick={() => setFormData({ ...formData, image_url: "" })}
                       >
                         Remover
                       </Button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                    <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         {isUploading ? (
                           <>
-                            <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-3" />
-                            <p className="text-sm text-blue-600 font-medium mb-1">
+                            <Loader2 className="w-12 h-12 text-blue-500 dark:text-purple-400 animate-spin mb-3" />
+                            <p className="text-sm text-blue-600 dark:text-purple-400 font-medium mb-1">
                               Validando imagem...
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               Aguarde enquanto verificamos se a imagem é apropriada
                             </p>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-12 h-12 text-gray-400 mb-3" />
-                            <p className="text-sm text-gray-700 font-medium mb-1">
+                            <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" />
+                            <p className="text-sm text-gray-700 dark:text-gray-300 font-medium mb-1">
                               Clique para fazer upload da imagem
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               PNG, JPG ou GIF (máx. 10MB)
                             </p>
                           </>
@@ -348,7 +348,7 @@ export default function CreateEvent() {
 
               {/* Title */}
               <div>
-                <Label htmlFor="title">Título do Evento *</Label>
+                <Label htmlFor="title" className="dark:text-gray-300">Título do Evento *</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -357,12 +357,13 @@ export default function CreateEvent() {
                   }
                   required
                   placeholder="Ex: Show do Artista X"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <Label htmlFor="description">Descrição *</Label>
+                <Label htmlFor="description" className="dark:text-gray-300">Descrição *</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -372,23 +373,24 @@ export default function CreateEvent() {
                   required
                   rows={5}
                   placeholder="Descreva os detalhes do evento..."
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
 
               {/* State and City */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <Label htmlFor="state">Estado *</Label>
+                  <Label htmlFor="state" className="dark:text-gray-300">Estado *</Label>
                   <Select
                     value={formData.state}
                     onValueChange={(value) =>
                       setFormData({ ...formData, state: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-gray-900 dark:border-gray-700 dark:text-white">
                       <SelectValue placeholder="Selecione o estado" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
                       {states.map((state) => (
                         <SelectItem key={state.uf} value={state.uf}>
                           {state.name} ({state.uf})
@@ -399,7 +401,7 @@ export default function CreateEvent() {
                 </div>
 
                 <div>
-                  <Label htmlFor="city">Cidade *</Label>
+                  <Label htmlFor="city" className="dark:text-gray-300">Cidade *</Label>
                   <Input
                     id="city"
                     value={formData.city}
@@ -408,13 +410,14 @@ export default function CreateEvent() {
                     }
                     required
                     placeholder="Ex: São Paulo"
+                    className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Location */}
               <div>
-                <Label htmlFor="location">Endereço/Local *</Label>
+                <Label htmlFor="location" className="dark:text-gray-300">Endereço/Local *</Label>
                 <Input
                   id="location"
                   value={formData.location}
@@ -423,12 +426,13 @@ export default function CreateEvent() {
                   }
                   required
                   placeholder="Ex: Teatro Municipal, Av. Paulista, 1000"
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                 />
               </div>
 
               {/* Date */}
               <div>
-                <Label htmlFor="date">Data e Hora *</Label>
+                <Label htmlFor="date" className="dark:text-gray-300">Data e Hora *</Label>
                 <Input
                   id="date"
                   type="datetime-local"
@@ -437,22 +441,23 @@ export default function CreateEvent() {
                     setFormData({ ...formData, date: e.target.value })
                   }
                   required
+                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:[color-scheme:dark]"
                 />
               </div>
 
               {/* Category */}
               <div>
-                <Label htmlFor="category">Categoria *</Label>
+                <Label htmlFor="category" className="dark:text-gray-300">Categoria *</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) =>
                     setFormData({ ...formData, category: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-gray-900 dark:border-gray-700 dark:text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
                     {categories.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>
                         {cat.label}
@@ -465,7 +470,7 @@ export default function CreateEvent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Price */}
                 <div>
-                  <Label htmlFor="price">Preço (R$) *</Label>
+                  <Label htmlFor="price" className="dark:text-gray-300">Preço (R$) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -477,12 +482,13 @@ export default function CreateEvent() {
                     }
                     required
                     placeholder="0.00"
+                    className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                   />
                 </div>
 
                 {/* Capacity */}
                 <div>
-                  <Label htmlFor="capacity">Capacidade *</Label>
+                  <Label htmlFor="capacity" className="dark:text-gray-300">Capacidade *</Label>
                   <Input
                     id="capacity"
                     type="number"
@@ -493,23 +499,24 @@ export default function CreateEvent() {
                     }
                     required
                     placeholder="Ex: 500"
+                    className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Status */}
               <div>
-                <Label htmlFor="status">Status *</Label>
+                <Label htmlFor="status" className="dark:text-gray-300">Status *</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) =>
                     setFormData({ ...formData, status: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-gray-900 dark:border-gray-700 dark:text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
                     <SelectItem value="ativo">Ativo</SelectItem>
                     <SelectItem value="cancelado">Cancelado</SelectItem>
                     <SelectItem value="encerrado">Encerrado</SelectItem>
@@ -523,12 +530,13 @@ export default function CreateEvent() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate(createPageUrl("Home"))}
+                  className="dark:border-gray-700 dark:text-gray-300"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {eventId ? "Atualizar Evento" : "Criar Evento"}

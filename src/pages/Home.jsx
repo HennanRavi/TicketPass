@@ -3,9 +3,10 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Search, Calendar, MapPin, Users, TrendingUp, Settings as SettingsIcon } from "lucide-react";
+import { Search, Calendar, MapPin, Users, TrendingUp, Settings as SettingsIcon, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import EventCard from "../components/events/EventCard";
 import EventFilters from "../components/events/EventFilters";
@@ -46,6 +47,7 @@ export default function Home() {
   const [locationError, setLocationError] = useState(null);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   
   const [filters, setFilters] = useState({
     searchTerm: "",
@@ -79,19 +81,19 @@ export default function Home() {
     }
   }, []);
 
-  const { data: events, isLoading } = useQuery({
+  const { data: events = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: () => base44.entities.Event.filter({ status: "ativo" }, "-date"),
     initialData: [],
   });
 
-  const { data: allReviews } = useQuery({
+  const { data: allReviews = [] } = useQuery({
     queryKey: ["all-reviews"],
     queryFn: () => base44.entities.Review.list(),
     initialData: [],
   });
 
-  const { data: savedSearches } = useQuery({
+  const { data: savedSearches = [] } = useQuery({
     queryKey: ["saved-searches", user?.id],
     queryFn: () => base44.entities.SavedSearch.filter({ user_id: user.id }, "-created_date"),
     enabled: !!user,
@@ -116,6 +118,8 @@ export default function Home() {
 
   const eventRatings = useMemo(() => {
     const ratings = {};
+    if (!Array.isArray(allReviews)) return ratings;
+    
     allReviews.forEach((review) => {
       if (!ratings[review.event_id]) {
         ratings[review.event_id] = { sum: 0, count: 0 };
@@ -132,6 +136,8 @@ export default function Home() {
   }, [allReviews]);
 
   const filteredEvents = useMemo(() => {
+    if (!Array.isArray(events)) return [];
+    
     let filtered = events.filter((event) => {
       const searchLower = filters.searchTerm.toLowerCase();
       const matchesSearch =
@@ -183,7 +189,7 @@ export default function Home() {
   }, [events, filters, userLocation]);
 
   const availableCities = useMemo(() => {
-    if (filters.state === "all") return [];
+    if (filters.state === "all" || !Array.isArray(events)) return [];
     const citiesInState = events
       .filter(e => e.state === filters.state && e.status === "ativo")
       .map(e => e.city)
@@ -244,127 +250,193 @@ export default function Home() {
     navigate(`${createPageUrl("EventDetails")}?id=${eventId}`);
   };
 
+  const hasActiveFilters = 
+    filters.state !== "all" || 
+    filters.city !== "all" || 
+    filters.category !== "all" || 
+    filters.priceRange[0] !== 0 || 
+    filters.priceRange[1] !== 1000 ||
+    filters.startDate ||
+    filters.endDate ||
+    filters.sortByProximity;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Encontrar Eventos</h1>
-            {user && (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
+      {/* Hero Section with Search */}
+      <div className="relative bg-gradient-to-br from-blue-500/90 via-blue-400/80 to-white/90 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-gray-900/90 backdrop-blur-3xl">
+        {/* Decorative blur circles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/30 dark:bg-purple-600/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/40 dark:bg-purple-900/30 rounded-full blur-3xl animate-float-reverse animate-pulse-glow"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 text-white text-shadow-strong">
+              Descubra Eventos Incríveis
+            </h1>
+            <p className="text-lg text-white/95 max-w-2xl mx-auto text-shadow-medium">
+              Encontre shows, festivais, conferências e muito mais perto de você
+            </p>
+          </div>
+
+          {/* Search Bar */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <SearchAutocomplete
+              events={events}
+              value={filters.searchTerm}
+              onChange={(value) => handleFilterChange({ searchTerm: value })}
+              onSuggestionClick={handleSuggestionClick}
+              savedSearches={savedSearches}
+              onDeleteSavedSearch={(id) => deleteSavedSearchMutation.mutate(id)}
+              onApplySavedSearch={handleApplySavedSearch}
+            />
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 text-center border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <div className="w-8 h-8 bg-blue-600 dark:bg-purple-600 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold text-white text-shadow-medium">{filteredEvents?.length || 0}</span>
+              </div>
+              <p className="text-sm text-white/95 text-shadow-soft">Eventos Encontrados</p>
+            </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 text-center border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <div className="w-8 h-8 bg-green-600 dark:bg-orange-600 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold text-white text-shadow-medium">
+                  {Array.isArray(events) ? events.filter((e) => new Date(e.date) > new Date()).length : 0}
+                </span>
+              </div>
+              <p className="text-sm text-white/95 text-shadow-soft">Próximos</p>
+            </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 text-center border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <div className="w-8 h-8 bg-purple-600 dark:bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold text-white text-shadow-medium">
+                  {Array.isArray(filteredEvents) ? new Set(filteredEvents.map((e) => e.city)).size : 0}
+                </span>
+              </div>
+              <p className="text-sm text-white/95 text-shadow-soft">Cidades</p>
+            </div>
+            <div className="bg-white/20 dark:bg-gray-800/40 backdrop-blur-md rounded-xl p-4 text-center border border-white/30 dark:border-gray-700/30 shadow-lg">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <div className="w-8 h-8 bg-orange-600 dark:bg-pink-600 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-2xl font-bold text-white text-shadow-medium">
+                  {Array.isArray(events) ? events.reduce((sum, e) => sum + (e.tickets_sold || 0), 0) : 0}
+                </span>
+              </div>
+              <p className="text-sm text-white/95 text-shadow-soft">Ingressos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Location Alert */}
+      {locationError && !userLocation && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+          <Alert className="bg-blue-50 dark:bg-purple-900/20 border-blue-200 dark:border-purple-800">
+            <AlertDescription className="text-sm text-blue-800 dark:text-purple-300">
+              💡 Permita acesso à localização para ver eventos próximos a você
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Filter Bar */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`gap-2 ${showFilters ? 'bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700' : 'dark:border-gray-700 dark:text-gray-300'}`}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filtros
+              {hasActiveFilters && (
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs dark:bg-gray-700 dark:text-gray-300">
+                  {[
+                    filters.state !== "all" && 1,
+                    filters.city !== "all" && 1,
+                    filters.category !== "all" && 1,
+                    (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000) && 1,
+                    filters.startDate && 1,
+                    filters.endDate && 1,
+                    filters.sortByProximity && 1,
+                  ].filter(Boolean).length}
+                </Badge>
+              )}
+            </Button>
+            {hasActiveFilters && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                onClick={() => setShowPreferencesModal(true)}
-                className="flex items-center gap-2"
+                onClick={handleClearFilters}
+                className="text-gray-600 dark:text-gray-400"
               >
-                <SettingsIcon className="w-4 h-4" />
-                Preferências
+                Limpar filtros
               </Button>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Search and Filters Section */}
-      <div className="bg-white py-6 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
-          <SearchAutocomplete
-            events={events}
-            value={filters.searchTerm}
-            onChange={(value) => handleFilterChange({ searchTerm: value })}
-            onSuggestionClick={handleSuggestionClick}
-            savedSearches={savedSearches}
-            onDeleteSavedSearch={(id) => deleteSavedSearchMutation.mutate(id)}
-            onApplySavedSearch={handleApplySavedSearch}
-          />
-
-          {locationError && !userLocation && (
-            <Alert className="bg-blue-50 border-blue-200">
-              <AlertDescription className="text-sm text-blue-800">
-                💡 Permita acesso à localização para ver eventos próximos a você
-              </AlertDescription>
-            </Alert>
+          {user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowPreferencesModal(true)}
+              className="gap-2 text-gray-600 dark:text-gray-400"
+            >
+              <SettingsIcon className="w-4 h-4" />
+              Preferências
+            </Button>
           )}
-
-          <EventFilters
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={handleClearFilters}
-            availableCities={availableCities}
-            onSaveSearch={() => setShowSaveDialog(true)}
-            userLocation={userLocation}
-          />
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-blue-600" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">{filteredEvents.length}</span>
-            </div>
-            <p className="text-xs text-gray-500">Eventos Encontrados</p>
+        {/* Expandable Filters */}
+        {showFilters && (
+          <div className="mb-6 animate-in slide-in-from-top-2">
+            <EventFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilters={handleClearFilters}
+              availableCities={availableCities}
+              onSaveSearch={() => setShowSaveDialog(true)}
+              userLocation={userLocation}
+            />
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-blue-600" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">
-                {events.filter((e) => new Date(e.date) > new Date()).length}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">Próximos Eventos</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-blue-600" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">
-                {new Set(filteredEvents.map((e) => e.city)).size}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">Cidades</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-100">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-4 h-4 text-blue-600" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">
-                {events.reduce((sum, e) => sum + (e.tickets_sold || 0), 0)}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">Ingressos Vendidos</p>
-          </div>
-        </div>
+        )}
 
         {/* Events Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl overflow-hidden shadow-lg animate-pulse"
+                className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg animate-pulse"
               >
-                <div className="h-40 bg-gray-200"></div>
-                <div className="p-4 space-y-2">
-                  <div className="h-5 bg-gray-200 rounded"></div>
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
+                <div className="p-5 space-y-3">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
               </div>
             ))}
           </div>
-        ) : filteredEvents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        ) : Array.isArray(filteredEvents) && filteredEvents.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
               <EventCard
                 key={event.id}
@@ -375,17 +447,17 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Search className="w-8 h-8 text-gray-400" />
+          <div className="text-center py-20">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900/40 dark:to-purple-800/40 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search className="w-10 h-10 text-blue-600 dark:text-purple-400" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Nenhum evento encontrado
             </h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Tente ajustar os filtros para encontrar eventos
+            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+              Tente ajustar os filtros ou buscar por outros termos para encontrar eventos incríveis
             </p>
-            <Button onClick={handleClearFilters} variant="outline" size="sm">
+            <Button onClick={handleClearFilters} variant="outline" className="dark:border-gray-700 dark:text-gray-300">
               Limpar todos os filtros
             </Button>
           </div>

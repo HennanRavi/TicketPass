@@ -1,426 +1,429 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { DollarSign, Star, Quote, Calendar, Search, ArrowRight, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Calendar,
+  Shield,
+  TrendingUp,
+  Users,
+  Zap,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  CheckCircle2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 const testimonials = [
   {
     name: "Maria Silva",
-    role: "Organizadora de Shows",
-    company: "MS Eventos",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+    role: "Organizadora de Eventos",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
     rating: 5,
-    text: "A plataforma transformou completamente a forma como gerencio meus eventos. O sistema de antecipação de pagamentos é simplesmente perfeito!"
+    text: "A plataforma revolucionou a forma como organizo meus eventos. Interface simples e pagamentos seguros!",
   },
   {
     name: "João Santos",
-    role: "Produtor Cultural",
-    company: "Cultura Viva",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+    role: "Produtor Musical",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
     rating: 5,
-    text: "Excelente custo-benefício! As taxas são justas e o suporte é sempre muito atencioso. Recomendo para todos os organizadores."
+    text: "Consegui aumentar minhas vendas em 300% desde que comecei a usar. O dashboard é incrível!",
   },
   {
-    name: "Ana Paula Costa",
-    role: "Gestora de Teatro",
-    company: "Teatro Municipal",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+    name: "Ana Costa",
+    role: "Participante Frequente",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
     rating: 5,
-    text: "Facilidade incrível para vender ingressos online. Meus clientes adoram a praticidade e eu adoro os relatórios detalhados!"
+    text: "Comprar ingressos nunca foi tão fácil. Recebo tudo por email e posso acessar de qualquer lugar!",
   },
   {
-    name: "Carlos Mendes",
-    role: "Organizador de Festivais",
-    company: "Festival Brasil",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
+    name: "Carlos Oliveira",
+    role: "Organizador de Conferências",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
     rating: 5,
-    text: "Melhor plataforma que já usei! A interface é intuitiva e as ferramentas de gestão são muito completas. Vale cada centavo!"
+    text: "Excelente suporte e recursos avançados. Perfeito para eventos corporativos e conferências.",
   },
-  {
-    name: "Patricia Lima",
-    role: "Coordenadora de Eventos",
-    company: "EventPro",
-    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&q=80",
-    rating: 5,
-    text: "Sistema robusto e confiável. Já organizei mais de 50 eventos pela plataforma e nunca tive problemas. Recomendo!"
-  },
-  {
-    name: "Roberto Alves",
-    role: "Produtor de Festivais",
-    company: "Mega Eventos",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
-    rating: 5,
-    text: "Atendimento excepcional e recursos completos. A antecipação de valores faz toda a diferença no fluxo de caixa."
-  }
 ];
 
 const features = [
   {
-    title: "Sistema completo de gestão de eventos",
-    description: "Crie, edite e gerencie seus eventos com facilidade"
+    icon: Calendar,
+    title: "Gestão Completa",
+    description: "Crie, edite e gerencie seus eventos com facilidade total",
   },
   {
-    title: "Antecipação de pagamentos",
-    description: "Receba antes do evento acontecer"
+    icon: Shield,
+    title: "Pagamentos Seguros",
+    description: "Processamento seguro com garantia de reembolso em 7 dias",
   },
   {
-    title: "QR Codes para validação",
-    description: "Valide ingressos na entrada de forma rápida e segura"
+    icon: TrendingUp,
+    title: "Dashboard Intuitivo",
+    description: "Acompanhe vendas, receitas e métricas em tempo real",
   },
   {
-    title: "Relatórios em tempo real",
-    description: "Acompanhe vendas e métricas importantes"
+    icon: Users,
+    title: "Sem Limites",
+    description: "Gerencie quantos eventos quiser sem restrições",
   },
   {
-    title: "Suporte dedicado 24/7",
-    description: "Nossa equipe sempre pronta para ajudar"
+    icon: Zap,
+    title: "Entrega Instantânea",
+    description: "Ingressos entregues automaticamente por email",
   },
   {
-    title: "Zero custo para criar",
-    description: "Crie eventos gratuitamente, pague apenas ao vender"
-  }
+    icon: Search,
+    title: "Visibilidade Máxima",
+    description: "Seus eventos aparecem para milhares de potenciais clientes",
+  },
 ];
 
 export default function SaibaMais() {
-  const [currentTestimonial, setCurrentTestimonial] = React.useState(0);
+  const navigate = useNavigate();
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const nextTestimonial = () => {
     setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
   };
 
   const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentTestimonial((prev) =>
+      prev === 0 ? testimonials.length - 1 : prev - 1
+    );
   };
 
   const getVisibleTestimonials = () => {
     const visible = [];
-    for (let i = 0; i < 4; i++) {
-      visible.push(testimonials[(currentTestimonial + i) % testimonials.length]);
+    for (let i = -1; i <= 1; i++) {
+      const index =
+        (currentTestimonial + i + testimonials.length) % testimonials.length;
+      visible.push({ ...testimonials[index], offset: i });
     }
     return visible;
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50/70 via-blue-100/70 to-blue-50/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            {/* Left Content */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
-                  Muito além da venda de ingressos online
-                </h1>
-                <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
-                  Organize seu evento na melhor plataforma de eventos da região!
-                </p>
-                <p className="text-base text-gray-600">
-                  Venda mais com nossas várias ferramentas de criação e tenha muito menos trabalho para gerenciar seu evento e vender ingressos online
-                </p>
-              </div>
+      <div className="relative bg-gradient-to-br from-blue-500/90 via-blue-400/80 to-white/90 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-gray-900/90 backdrop-blur-3xl">
+        {/* Decorative blur circles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/30 dark:bg-purple-600/20 rounded-full blur-3xl animate-float-slow"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/40 dark:bg-purple-900/30 rounded-full blur-3xl animate-float-reverse animate-pulse-glow"></div>
+        </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Link to={createPageUrl("CreateEvent")}>
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9">
-                    Crie seu evento
-                  </Button>
-                </Link>
-                <Link to={createPageUrl("Home")}>
-                  <Button size="sm" variant="outline" className="border-2 border-gray-300 hover:bg-white px-6 h-9">
-                    <Search className="w-4 h-4 mr-2" />
-                    Buscar eventos
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Image */}
-            <div className="relative hidden lg:block">
-              <div className="relative">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl border-4 border-white">
-                  <img
-                    src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&q=80"
-                    alt="Professional working"
-                    className="w-full h-[300px] object-cover"
-                  />
-                </div>
-
-                <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-                  <div className="flex items-end gap-2 h-24 mb-2">
-                    <div className="w-6 bg-blue-200 rounded-t" style={{ height: '40%' }}></div>
-                    <div className="w-6 bg-blue-300 rounded-t" style={{ height: '50%' }}></div>
-                    <div className="w-6 bg-blue-400 rounded-t" style={{ height: '65%' }}></div>
-                    <div className="w-6 bg-blue-500 rounded-t" style={{ height: '75%' }}></div>
-                    <div className="w-6 bg-blue-600 rounded-t relative" style={{ height: '90%' }}>
-                      <div className="absolute -top-6 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-0.5 rounded">
-                        +23%
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>Seg</span>
-                    <span>Ter</span>
-                    <span>Qua</span>
-                    <span>Qui</span>
-                    <span>Sex</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white text-shadow-strong">
+            A Plataforma Completa para Seus Eventos
+          </h1>
+          <p className="text-xl text-white/95 max-w-3xl mx-auto mb-8 text-shadow-medium">
+            Organize, venda e gerencie ingressos de forma simples e profissional. 
+            Tudo o que você precisa em um só lugar.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              size="lg"
+              onClick={() => navigate(createPageUrl("CreateEvent"))}
+              className="bg-white text-blue-600 hover:bg-gray-50 dark:text-purple-600 shadow-2xl text-lg px-8 py-6"
+            >
+              Criar Meu Evento
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => navigate(createPageUrl("Home"))}
+              className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 text-lg px-8 py-6"
+            >
+              <Search className="w-5 h-5 mr-2" />
+              Buscar Eventos
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="bg-white py-12">
+      {/* Features */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Por Que Escolher a TicketPass?
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Recursos poderosos para tornar seus eventos um sucesso absoluto
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <Card
+              key={index}
+              className="border-none shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 dark:bg-gray-800"
+            >
+              <CardContent className="p-6">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-purple-600 dark:to-indigo-700 rounded-2xl flex items-center justify-center mb-4">
+                  <feature.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Payment Benefits */}
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-orange-950/40 dark:to-orange-900/40 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-              Tudo que você precisa em um só lugar
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Pagamentos Simples e Seguros
             </h2>
-            <p className="text-base text-gray-600 max-w-2xl mx-auto">
-              Uma plataforma completa para gerenciar seus eventos do início ao fim
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Processamento transparente com proteção para compradores e organizadores
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-gradient-to-br from-blue-50 to-white rounded-xl p-4 border border-blue-100 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-start gap-2">
-                  <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Check className="w-4 h-4 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-1">{feature.title}</h3>
-                    <p className="text-xs text-gray-600">{feature.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Payment Benefits Section */}
-      <div className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-8 items-start">
-            {/* Transaction Table */}
-            <div>
-              <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-6">
-                <div className="grid grid-cols-4 gap-2 px-3 py-2 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-600">
-                  <div>ID</div>
-                  <div>Data e hora</div>
-                  <div>Atividades da carteira</div>
-                  <div className="text-right">Valor</div>
-                </div>
-
-                <div className="divide-y divide-gray-100">
-                  {[
-                    { id: 'ABCDE01', date: '07/11/23 09:00', desc: 'Saída por saque', value: 'R$80.500,00' },
-                    { id: '1234XYZ', date: '07/11/23 14:30', desc: 'Repasse 50% receita evento', value: 'R$117.900,00' },
-                    { id: 'WXYZ89', date: '06/10/23 16:15', desc: 'Saída por saque', value: 'R$35.785,00' },
-                    { id: '45R7NLIM', date: '05/11/23 10:45', desc: 'Repasse 70% receita', value: 'R$16.354,00' },
-                    { id: 'UVWXYZ12', date: '28/10/23 13:20', desc: 'Repasse 70% receita', value: 'R$18.785,00' },
-                  ].map((transaction, idx) => (
-                    <div key={idx} className="grid grid-cols-4 gap-2 px-3 py-2 text-xs hover:bg-gray-50 transition-colors">
-                      <div className="font-mono text-gray-700">{transaction.id}</div>
-                      <div className="text-gray-600">{transaction.date}</div>
-                      <div className="text-gray-700">{transaction.desc}</div>
-                      <div className="text-right font-semibold text-green-600">{transaction.value}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Badge movida para baixo da tabela */}
-              <div className="bg-white rounded-xl shadow-xl p-4 border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-0.5">Disponível para saque</p>
-                    <p className="text-xl font-bold text-gray-900">R$809.636,90</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Pricing Info */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <div className="space-y-3">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                  Crie seu evento de graça e pague somente quando vender o ingresso.
-                </h2>
-                <p className="text-base text-gray-700 leading-relaxed">
-                  Não espere seu evento finalizar para receber! Fazemos antecipação da maior parte dos valores do seu evento.{' '}
-                  <span className="font-semibold text-gray-900">(Consulte condições)</span>
-                </p>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-green-100 dark:bg-orange-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                    Retenção de 7 Dias
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    O dinheiro fica retido por 7 dias após a compra, garantindo segurança para reembolsos.
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="inline-block">
-                  <div className="bg-yellow-400 text-black font-bold px-3 py-1.5 rounded-lg text-xs">
-                    taxas a partir
-                  </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-6 h-6 text-blue-600 dark:text-purple-400" />
                 </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                    Taxa Justa de 5%
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Apenas 5% de taxa da plataforma. Organizadores recebem 95% do valor.
+                  </p>
+                </div>
+              </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-bold text-gray-900">7,99</span>
-                    <span className="text-3xl font-bold text-gray-900">%</span>
-                  </div>
-                  <p className="text-base font-semibold text-gray-700">
-                    Isso sim é o melhor custo benefício!
+              <div className="flex gap-4">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-indigo-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-6 h-6 text-purple-600 dark:text-indigo-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                    Transferência Automática
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Após 7 dias, o valor é automaticamente transferido para sua conta.
                   </p>
                 </div>
               </div>
             </div>
+
+            <Card className="border-none shadow-2xl dark:bg-gray-800">
+              <CardContent className="p-8">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Exemplo de Transação
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Ingresso vendido</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">R$ 100,00</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Taxa da plataforma (5%)</span>
+                    <span className="font-semibold text-red-600 dark:text-red-400">- R$ 5,00</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      Você recebe
+                    </span>
+                    <span className="text-2xl font-bold text-green-600 dark:text-orange-500">
+                      R$ 95,00
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-6 bg-blue-50 dark:bg-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-purple-800">
+                  <p className="text-sm text-blue-900 dark:text-purple-300">
+                    💡 <strong>Pagamento liberado após 7 dias</strong> do evento ou da compra, 
+                    o que ocorrer primeiro.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
 
-      {/* Testimonials Section */}
-      <div className="bg-white py-12">
+      {/* Testimonials */}
+      <div className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center gap-2 bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-semibold mb-3">
-              <Star className="w-3.5 h-3.5 fill-current" />
-              Avaliações
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-              O que dizem nossos clientes
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              O Que Nossos Usuários Dizem
             </h2>
-            <p className="text-base text-gray-600 max-w-2xl mx-auto">
-              Milhares de organizadores confiam na TicketPass para gerenciar seus eventos
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Histórias reais de quem usa a TicketPass todos os dias
             </p>
           </div>
 
           {/* Carousel */}
           <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {getVisibleTestimonials().map((testimonial, index) => (
-                <div
-                  key={`${currentTestimonial}-${index}`}
-                  className="bg-gray-50 rounded-xl p-4 hover:shadow-lg transition-all duration-300 border border-gray-100 relative animate-in fade-in slide-in-from-right-4 duration-500"
-                >
-                  <Quote className="absolute top-3 right-3 w-6 h-6 text-blue-100" />
-                  
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
+            <div className="flex items-center justify-center gap-8">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={prevTestimonial}
+                className="hidden md:flex w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                aria-label="Avaliação anterior"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </Button>
 
-                  <p className="text-gray-700 text-xs mb-4 leading-relaxed line-clamp-4">
-                    "{testimonial.text}"
-                  </p>
-
-                  <div className="flex items-center gap-2 pt-3 border-t border-gray-200">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                    <div>
-                      <p className="font-semibold text-gray-900 text-xs">
-                        {testimonial.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {testimonial.role}
-                      </p>
-                      <p className="text-xs text-blue-600 font-medium">
-                        {testimonial.company}
-                      </p>
-                    </div>
-                  </div>
+              <div className="flex-1 max-w-4xl relative overflow-hidden">
+                <div className="flex items-center justify-center gap-6">
+                  {getVisibleTestimonials().map((testimonial, idx) => (
+                    <Card
+                      key={idx}
+                      className={`transition-all duration-500 border-none dark:bg-gray-800 ${
+                        testimonial.offset === 0
+                          ? "shadow-2xl scale-100 opacity-100 z-10"
+                          : "shadow-lg scale-90 opacity-40 hidden md:block"
+                      }`}
+                      style={{
+                        transform: `translateX(${testimonial.offset * 20}px)`,
+                      }}
+                    >
+                      <CardContent className="p-8">
+                        <div className="flex items-center gap-4 mb-6">
+                          <img
+                            src={testimonial.image}
+                            alt={testimonial.name}
+                            className="w-16 h-16 rounded-full object-cover border-4 border-blue-100 dark:border-purple-900/40"
+                          />
+                          <div>
+                            <h4 className="font-bold text-gray-900 dark:text-white">
+                              {testimonial.name}
+                            </h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</p>
+                            <div className="flex gap-1 mt-1">
+                              {[...Array(testimonial.rating)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                          "{testimonial.text}"
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={nextTestimonial}
+                className="hidden md:flex w-12 h-12 rounded-full bg-white dark:bg-gray-800 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                aria-label="Próxima avaliação"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </Button>
             </div>
 
-            {/* Navigation Buttons */}
-            <button
-              onClick={prevTestimonial}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
-              aria-label="Anterior"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <button
-              onClick={nextTestimonial}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors border border-gray-200"
-              aria-label="Próximo"
-            >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
-            </button>
+            {/* Mobile Navigation */}
+            <div className="flex md:hidden justify-center gap-3 mt-6">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={prevTestimonial}
+                className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg"
+                aria-label="Avaliação anterior (mobile)"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={nextTestimonial}
+                className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 shadow-lg"
+                aria-label="Próxima avaliação (mobile)"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
 
             {/* Indicators */}
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-8">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentTestimonial
-                      ? "bg-blue-600 w-6"
-                      : "bg-gray-300 hover:bg-gray-400"
+                      ? "bg-blue-600 dark:bg-purple-600 w-8"
+                      : "bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600"
                   }`}
                   aria-label={`Ir para avaliação ${index + 1}`}
                 />
               ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-1">4.9/5</p>
-              <p className="text-xs text-gray-600">Avaliação média</p>
+      {/* Stats */}
+      <div className="bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-purple-900 dark:to-indigo-900 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center text-white">
+            <div>
+              <p className="text-5xl font-bold mb-2 text-shadow-strong">10,000+</p>
+              <p className="text-blue-100 dark:text-purple-200 text-shadow-soft">Eventos Realizados</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-1">2.500+</p>
-              <p className="text-xs text-gray-600">Avaliações</p>
+            <div>
+              <p className="text-5xl font-bold mb-2 text-shadow-strong">50,000+</p>
+              <p className="text-blue-100 dark:text-purple-200 text-shadow-soft">Ingressos Vendidos</p>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-1">98%</p>
-              <p className="text-xs text-gray-600">Satisfação</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 mb-1">5.000+</p>
-              <p className="text-xs text-gray-600">Organizadores</p>
+            <div>
+              <p className="text-5xl font-bold mb-2 text-shadow-strong">98%</p>
+              <p className="text-blue-100 dark:text-purple-200 text-shadow-soft">Satisfação dos Clientes</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl mb-3">
-              <Calendar className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-              Pronto para descobrir eventos incríveis?
-            </h2>
-            <p className="text-base text-blue-100 max-w-2xl mx-auto mb-8">
-              Milhares de eventos esperando por você. Shows, festivais, workshops e muito mais!
-            </p>
-            <div className="pt-4">
-              <Link to={createPageUrl("Home")}>
-                <Button size="sm" className="bg-white text-blue-600 hover:bg-gray-100 px-6 h-9">
-                  <Search className="w-4 h-4 mr-2" />
-                  Explorar Eventos
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
+      {/* CTA Final */}
+      <div className="py-20 bg-white dark:bg-gray-950">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Pronto para Começar?
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            Junte-se a milhares de organizadores que confiam na TicketPass
+          </p>
+          <Button
+            size="lg"
+            onClick={() => navigate(createPageUrl("Home"))}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 shadow-xl text-lg px-10 py-6"
+          >
+            Explorar Eventos Agora
+          </Button>
         </div>
       </div>
     </div>

@@ -20,6 +20,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import OrganizerTermsDialog from "../components/organizer/OrganizerTermsDialog";
+import PushNotificationManager from "../components/notifications/PushNotificationManager";
+import NotificationPreferences from "../components/notifications/NotificationPreferences";
 
 export default function UserSettings() {
   const navigate = useNavigate();
@@ -36,6 +39,8 @@ export default function UserSettings() {
     profile_image: "",
     user_type: "",
   });
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [pendingOrganizerChange, setPendingOrganizerChange] = useState(false);
 
   useEffect(() => {
     base44.auth
@@ -59,13 +64,11 @@ export default function UserSettings() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Por favor, selecione uma imagem válida");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("A imagem deve ter no máximo 5MB");
       return;
@@ -75,7 +78,6 @@ export default function UserSettings() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-      // Use AI to validate if image is appropriate
       const validation = await base44.integrations.Core.InvokeLLM({
         prompt: `Analyze this image and determine if it's appropriate for a user profile picture. 
         Check if it contains: inappropriate content, violence, nudity, hate symbols, or anything offensive.
@@ -108,13 +110,19 @@ export default function UserSettings() {
 
   const updateUserMutation = useMutation({
     mutationFn: async (data) => {
-      // Update custom fields using updateMe
-      await base44.auth.updateMe({
+      const updateData = {
         display_name: data.display_name,
         phone: data.phone,
         profile_image: data.profile_image,
         user_type: data.user_type,
-      });
+      };
+
+      if (data.user_type === "organizador" && data.acceptedTerms) {
+        updateData.organizer_terms_accepted = true;
+        updateData.organizer_terms_accepted_date = new Date().toISOString();
+      }
+
+      await base44.auth.updateMe(updateData);
       
       return data;
     },
@@ -122,14 +130,13 @@ export default function UserSettings() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       setShowConfirmDialog(false);
       setPendingData(null);
+      setPendingOrganizerChange(false);
       
-      // Show success message
       toast.success("✅ Perfil atualizado com sucesso!", {
         description: "Suas alterações foram salvas.",
         duration: 4000,
       });
       
-      // Update local user state - force reload from server
       setTimeout(() => {
         base44.auth.me().then((updatedUser) => {
           setUser(updatedUser);
@@ -148,61 +155,67 @@ export default function UserSettings() {
       toast.error("Erro ao atualizar perfil. Tente novamente.");
       setShowConfirmDialog(false);
       setPendingData(null);
+      setPendingOrganizerChange(false);
     },
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate name
     if (formData.display_name.trim().length < 3) {
       toast.error("Nome deve ter pelo menos 3 caracteres");
       return;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Email inválido");
       return;
     }
 
-    // Validate phone (optional - accepts various formats)
     if (formData.phone && formData.phone.trim()) {
-      // Remove all non-numeric characters for validation
       const numbersOnly = formData.phone.replace(/\D/g, '');
       
-      // Check if has between 10-11 digits (Brazilian phone)
       if (numbersOnly.length < 10 || numbersOnly.length > 11) {
         toast.error("Telefone deve ter 10 ou 11 dígitos. Ex: (11) 98765-4321");
         return;
       }
     }
 
-    // Check if name or image changed
     const nameChanged = formData.display_name !== (user.display_name || user.full_name);
     const imageChanged = formData.profile_image !== user.profile_image;
     const phoneChanged = formData.phone !== user.phone;
     const userTypeChanged = formData.user_type !== user.user_type;
 
-    // If only phone or user_type changed (no validation needed)
+    const changingToOrganizer = userTypeChanged && formData.user_type === "organizador";
+    if (changingToOrganizer && !user.organizer_terms_accepted) {
+      setPendingOrganizerChange(true);
+      setPendingData({
+        display_name: formData.display_name,
+        phone: formData.phone,
+        profile_image: formData.profile_image,
+        user_type: formData.user_type,
+      });
+      setShowTermsDialog(true);
+      return;
+    }
+
     if (!nameChanged && !imageChanged && (phoneChanged || userTypeChanged)) {
       updateUserMutation.mutate({
         display_name: formData.display_name,
         phone: formData.phone,
         profile_image: formData.profile_image,
         user_type: formData.user_type,
+        acceptedTerms: user.organizer_terms_accepted && formData.user_type === "organizador"
       });
       return;
     }
     
-    // If nothing changed
     if (!nameChanged && !imageChanged && !phoneChanged && !userTypeChanged) {
       toast.info("Nenhuma alteração foi feita");
       return;
     }
 
-    // Validate name for profanity if changed
     if (nameChanged) {
       setIsValidating(true);
       try {
@@ -236,12 +249,12 @@ export default function UserSettings() {
       setIsValidating(false);
     }
 
-    // Show confirmation dialog
     setPendingData({
       display_name: formData.display_name,
       phone: formData.phone,
       profile_image: formData.profile_image,
       user_type: formData.user_type,
+      acceptedTerms: user.organizer_terms_accepted && formData.user_type === "organizador"
     });
     setShowConfirmDialog(true);
   };
@@ -249,6 +262,16 @@ export default function UserSettings() {
   const handleConfirmUpdate = () => {
     if (pendingData) {
       updateUserMutation.mutate(pendingData);
+    }
+  };
+
+  const handleAcceptOrganizerTerms = () => {
+    setShowTermsDialog(false);
+    if (pendingData) {
+      updateUserMutation.mutate({
+        ...pendingData,
+        acceptedTerms: true,
+      });
     }
   };
 
@@ -268,9 +291,15 @@ export default function UserSettings() {
           <p className="text-gray-600 dark:text-gray-400">Gerencie suas informações pessoais</p>
         </div>
 
-        <Card className="border-none shadow-xl dark:bg-gray-800">
+        {/* Notifications Section */}
+        <div className="space-y-6 mb-8">
+          <PushNotificationManager user={user} />
+          <NotificationPreferences user={user} />
+        </div>
+
+        <Card className="border-none shadow-xl bg-white dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 dark:text-white">
+            <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
               <User className="w-5 h-5" />
               Informações Pessoais
             </CardTitle>
@@ -289,7 +318,7 @@ export default function UserSettings() {
                     : "🎉 Participante"}
               </Badge>
             </div>
-            <CardDescription className="dark:text-gray-400">
+            <CardDescription className="text-gray-600 dark:text-gray-400">
               Atualize seus dados e foto de perfil
             </CardDescription>
           </CardHeader>
@@ -339,7 +368,7 @@ export default function UserSettings() {
 
               {/* Display Name */}
               <div>
-                <Label htmlFor="display_name" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                <Label htmlFor="display_name" className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300">
                   <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Nome de Exibição *
                 </Label>
@@ -351,7 +380,7 @@ export default function UserSettings() {
                   }
                   required
                   placeholder="Como você quer ser chamado"
-                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                  className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Este nome será exibido em todo o sistema
@@ -360,7 +389,7 @@ export default function UserSettings() {
 
               {/* Email (readonly) */}
               <div>
-                <Label htmlFor="email" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                <Label htmlFor="email" className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300">
                   <Mail className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Email
                 </Label>
@@ -369,7 +398,7 @@ export default function UserSettings() {
                   type="email"
                   value={formData.email}
                   disabled
-                  className="bg-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400"
+                  className="bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   O email não pode ser alterado
@@ -378,7 +407,7 @@ export default function UserSettings() {
 
               {/* Phone */}
               <div>
-                <Label htmlFor="phone" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                <Label htmlFor="phone" className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300">
                   <Phone className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   Telefone (opcional)
                 </Label>
@@ -390,7 +419,7 @@ export default function UserSettings() {
                     setFormData({ ...formData, phone: e.target.value })
                   }
                   placeholder="(11) 98765-4321 ou 11987654321"
-                  className="dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                  className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Aceita vários formatos: (11) 98765-4321, 11987654321, etc.
@@ -400,7 +429,7 @@ export default function UserSettings() {
               {/* Type Selection for non-admin users */}
               {user.role !== "admin" && (
                 <div>
-                  <Label htmlFor="user_type" className="flex items-center gap-2 mb-2 dark:text-gray-300">
+                  <Label htmlFor="user_type" className="flex items-center gap-2 mb-2 text-gray-700 dark:text-gray-300">
                     <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     Tipo de Perfil
                   </Label>
@@ -410,7 +439,7 @@ export default function UserSettings() {
                     onChange={(e) =>
                       setFormData({ ...formData, user_type: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-600 dark:bg-gray-900 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                   >
                     <option value="participante">🎉 Participante - Comprar ingressos e participar de eventos</option>
                     <option value="organizador">👔 Organizador - Criar e gerenciar eventos</option>
@@ -438,21 +467,21 @@ export default function UserSettings() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate(createPageUrl("Home"))}
-                  className="flex-1 dark:border-gray-700 dark:text-gray-300"
+                  className="flex-1 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  disabled={updateUserMutation.isPending || isValidating}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
+                  disabled={updateUserMutation.isPending || isValidating || pendingOrganizerChange}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700 text-white"
                 >
                   {isValidating ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Validando...
                     </>
-                  ) : updateUserMutation.isPending ? (
+                  ) : updateUserMutation.isPending || pendingOrganizerChange ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Salvando...
@@ -471,20 +500,19 @@ export default function UserSettings() {
 
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent className="dark:bg-gray-800 dark:border-gray-700">
+          <DialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 dark:text-white">
+              <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
                 <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-purple-400" />
                 Confirmar Alterações
               </DialogTitle>
-              <DialogDescription className="dark:text-gray-400">
+              <DialogDescription className="text-gray-600 dark:text-gray-400">
                 Deseja confirmar as alterações no seu perfil?
               </DialogDescription>
             </DialogHeader>
             
             {pendingData && (
               <div className="py-4 space-y-4">
-                {/* Show changes */}
                 {pendingData.display_name !== (user.display_name || user.full_name) && (
                   <div className="bg-blue-50 dark:bg-purple-900/20 rounded-lg p-4 border border-blue-200 dark:border-purple-800">
                     <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">Nome:</p>
@@ -570,14 +598,14 @@ export default function UserSettings() {
                   setPendingData(null);
                 }}
                 disabled={updateUserMutation.isPending}
-                className="dark:border-gray-700 dark:text-gray-300"
+                className="border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
               >
                 Cancelar
               </Button>
               <Button
                 onClick={handleConfirmUpdate}
                 disabled={updateUserMutation.isPending}
-                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700 text-white"
               >
                 {updateUserMutation.isPending ? (
                   <>
@@ -594,6 +622,14 @@ export default function UserSettings() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Organizer Terms Dialog */}
+        <OrganizerTermsDialog
+          open={showTermsDialog}
+          onOpenChange={setShowTermsDialog}
+          onAccept={handleAcceptOrganizerTerms}
+          isLoading={updateUserMutation.isPending}
+        />
       </div>
     </div>
   );

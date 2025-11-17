@@ -97,10 +97,10 @@ export default function Support() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <Card className="border-none shadow-2xl dark:bg-gray-800">
+            <Card className="border-none shadow-2xl bg-white dark:bg-gray-800">
               <CardHeader>
-                <CardTitle className="dark:text-white">Envie sua Mensagem</CardTitle>
-                <CardDescription className="dark:text-gray-400">
+                <CardTitle className="text-gray-900 dark:text-white">Envie sua Mensagem</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
                   Preencha o formulário e nossa equipe entrará em contato
                 </CardDescription>
               </CardHeader>
@@ -108,17 +108,17 @@ export default function Support() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* Category */}
                   <div>
-                    <Label htmlFor="category" className="dark:text-gray-300">Categoria *</Label>
+                    <Label htmlFor="category" className="text-gray-700 dark:text-gray-300">Categoria *</Label>
                     <Select
                       value={formData.category}
                       onValueChange={(value) =>
                         setFormData({ ...formData, category: value })
                       }
                     >
-                      <SelectTrigger className="mt-2 dark:bg-gray-900 dark:border-gray-700 dark:text-white">
+                      <SelectTrigger className="mt-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="dark:bg-gray-900 dark:border-gray-700">
+                      <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
                         <SelectItem value="tecnico">🔧 Suporte Técnico</SelectItem>
                         <SelectItem value="financeiro">💳 Financeiro / Pagamento</SelectItem>
                         <SelectItem value="evento">🎫 Dúvidas sobre Eventos</SelectItem>
@@ -130,7 +130,7 @@ export default function Support() {
 
                   {/* Subject */}
                   <div>
-                    <Label htmlFor="subject" className="dark:text-gray-300">Assunto *</Label>
+                    <Label htmlFor="subject" className="text-gray-700 dark:text-gray-300">Assunto *</Label>
                     <Input
                       id="subject"
                       placeholder="Descreva brevemente o assunto"
@@ -139,13 +139,13 @@ export default function Support() {
                         setFormData({ ...formData, subject: e.target.value })
                       }
                       required
-                      className="mt-2 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                      className="mt-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                   </div>
 
                   {/* Message */}
                   <div>
-                    <Label htmlFor="message" className="dark:text-gray-300">Mensagem *</Label>
+                    <Label htmlFor="message" className="text-gray-700 dark:text-gray-300">Mensagem *</Label>
                     <Textarea
                       id="message"
                       placeholder="Descreva detalhadamente sua dúvida ou problema..."
@@ -155,7 +155,7 @@ export default function Support() {
                       }
                       required
                       rows={8}
-                      className="mt-2 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                      className="mt-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                   </div>
 
@@ -173,7 +173,7 @@ export default function Support() {
                   <Button
                     type="submit"
                     disabled={submitSupportMutation.isPending}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 py-6 text-lg font-semibold"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-purple-600 dark:to-indigo-600 dark:hover:from-purple-700 dark:hover:to-indigo-700 text-white py-6 text-lg font-semibold"
                   >
                     {submitSupportMutation.isPending ? (
                       <>
@@ -222,7 +222,7 @@ export default function Support() {
             </Card>
 
             {/* Email Card */}
-            <Card className="border-none shadow-lg dark:bg-gray-800">
+            <Card className="border-none shadow-lg bg-white dark:bg-gray-800">
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 bg-blue-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center">
@@ -251,7 +251,7 @@ export default function Support() {
             </Card>
 
             {/* FAQ Hints */}
-            <Card className="border-none shadow-lg dark:bg-gray-800">
+            <Card className="border-none shadow-lg bg-white dark:bg-gray-800">
               <CardContent className="p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <HelpCircle className="w-5 h-5 text-blue-600 dark:text-purple-400" />

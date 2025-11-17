@@ -1,6 +1,8 @@
-# TicketPass App by Hennan Raví
+# Base44 App
 
-It's a Vite+React app that communicates with the Base API.
+
+This app was created automatically by Base44.
+It's a Vite+React app that communicates with the Base44 API.
 
 ## Running the app
 
@@ -15,4 +17,4 @@ npm run dev
 npm run build
 ```
 
-For more information and support, please contact Hennan Ravi's support at consult.dev.hr@gmail.com
+For more information and support, please contact Base44 support at app@base44.com.

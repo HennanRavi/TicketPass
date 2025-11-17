@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 
 export default function TermosUso() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white py-12">
+      <div className="bg-gradient-to-br from-blue-600 to-blue-700 dark:from-purple-700 dark:to-purple-900 text-white py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl mb-4">
             <FileText className="w-6 h-6" />
@@ -17,7 +17,7 @@ export default function TermosUso() {
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Termos de Uso
           </h1>
-          <p className="text-base text-blue-100">
+          <p className="text-base text-blue-100 dark:text-purple-100">
             Última atualização: {new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
@@ -25,27 +25,27 @@ export default function TermosUso() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Introduction */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardContent className="p-6">
-            <p className="text-sm text-gray-700 leading-relaxed mb-3">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
               Bem-vindo à TicketPass. Estes Termos de Uso ("Termos") regem o uso de nossa plataforma de venda e gerenciamento de ingressos para eventos. Ao acessar ou usar nossos serviços, você concorda em cumprir estes Termos.
             </p>
-            <p className="text-sm text-gray-700 leading-relaxed">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               Se você não concordar com alguma parte destes Termos, não deve usar nossa plataforma.
             </p>
           </CardContent>
         </Card>
 
         {/* Account Terms */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
               Conta de Usuário
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               Para usar determinados recursos da plataforma, você deve criar uma conta:
             </p>
             <ul className="space-y-2">
@@ -56,8 +56,8 @@ export default function TermosUso() {
                 "Não compartilhe suas credenciais de acesso",
                 "Notifique-nos imediatamente sobre qualquer uso não autorizado"
               ].map((item, idx) => (
-                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                  <span className="w-1 h-1 bg-green-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                  <span className="w-1 h-1 bg-green-600 dark:bg-green-400 rounded-full mt-1.5 flex-shrink-0"></span>
                   {item}
                 </li>
               ))}
@@ -66,15 +66,15 @@ export default function TermosUso() {
         </Card>
 
         {/* Purchase Terms */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
               Compra de Ingressos
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
               Ao comprar ingressos através da plataforma:
             </p>
             <ul className="space-y-2">
@@ -86,8 +86,8 @@ export default function TermosUso() {
                 "É proibido revender ingressos por valores acima do nominal",
                 "A TicketPass não se responsabiliza por eventos cancelados"
               ].map((item, idx) => (
-                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                  <span className="w-1 h-1 bg-green-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                  <span className="w-1 h-1 bg-green-600 dark:bg-green-400 rounded-full mt-1.5 flex-shrink-0"></span>
                   {item}
                 </li>
               ))}
@@ -96,15 +96,15 @@ export default function TermosUso() {
         </Card>
 
         {/* Organizer Terms */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+            <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
               Organizadores de Eventos
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
               Se você é um organizador de eventos:
             </p>
             <ul className="space-y-2">
@@ -116,8 +116,8 @@ export default function TermosUso() {
                 "Você deve comunicar adequadamente cancelamentos ou alterações",
                 "Não pode discriminar participantes de forma ilegal"
               ].map((item, idx) => (
-                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                  <span className="w-1 h-1 bg-green-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                  <span className="w-1 h-1 bg-green-600 dark:bg-green-400 rounded-full mt-1.5 flex-shrink-0"></span>
                   {item}
                 </li>
               ))}
@@ -126,15 +126,15 @@ export default function TermosUso() {
         </Card>
 
         {/* Prohibited Uses */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <XCircle className="w-5 h-5 text-red-600" />
+            <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
+              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
               Usos Proibidos
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
               Você concorda em NÃO:
             </p>
             <ul className="space-y-2">
@@ -147,8 +147,8 @@ export default function TermosUso() {
                 "Publicar conteúdo ofensivo, difamatório ou inadequado",
                 "Coletar dados de outros usuários sem consentimento"
               ].map((item, idx) => (
-                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                  <span className="w-1 h-1 bg-red-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                  <span className="w-1 h-1 bg-red-600 dark:bg-red-400 rounded-full mt-1.5 flex-shrink-0"></span>
                   {item}
                 </li>
               ))}
@@ -157,30 +157,30 @@ export default function TermosUso() {
         </Card>
 
         {/* Intellectual Property */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="text-lg">Propriedade Intelectual</CardTitle>
+            <CardTitle className="text-lg dark:text-white">Propriedade Intelectual</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-700 mb-3">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
               Todo o conteúdo da plataforma TicketPass, incluindo textos, gráficos, logos, ícones, imagens, código e software, é de propriedade da TicketPass ou de seus licenciadores e está protegido por leis de direitos autorais.
             </p>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               Você não pode copiar, modificar, distribuir ou criar trabalhos derivados sem permissão prévia por escrito.
             </p>
           </CardContent>
         </Card>
 
         {/* Limitation of Liability */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <AlertTriangle className="w-5 h-5 text-yellow-600" />
+            <CardTitle className="flex items-center gap-2 text-lg dark:text-white">
+              <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
               Limitação de Responsabilidade
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-700 mb-3">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
               A TicketPass atua como intermediária entre organizadores e compradores:
             </p>
             <ul className="space-y-2">
@@ -192,8 +192,8 @@ export default function TermosUso() {
                 "Não garantimos que a plataforma estará sempre disponível",
                 "Não somos responsáveis por perdas de dados ou lucros cessantes"
               ].map((item, idx) => (
-                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                  <span className="w-1 h-1 bg-yellow-600 rounded-full mt-1.5 flex-shrink-0"></span>
+                <li key={idx} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                  <span className="w-1 h-1 bg-yellow-600 dark:bg-yellow-400 rounded-full mt-1.5 flex-shrink-0"></span>
                   {item}
                 </li>
               ))}
@@ -202,60 +202,60 @@ export default function TermosUso() {
         </Card>
 
         {/* Changes to Terms */}
-        <Card className="border-none shadow-lg mb-6">
+        <Card className="border-none shadow-lg mb-6 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="text-lg">Alterações nos Termos</CardTitle>
+            <CardTitle className="text-lg dark:text-white">Alterações nos Termos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
               Reservamo-nos o direito de modificar estes Termos a qualquer momento. Mudanças significativas serão comunicadas através de:
             </p>
             <ul className="space-y-1 mb-3">
-              <li className="text-sm text-gray-700 flex items-start gap-2">
-                <span className="w-1 h-1 bg-blue-600 rounded-full mt-1.5"></span>
+              <li className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                <span className="w-1 h-1 bg-blue-600 dark:bg-purple-400 rounded-full mt-1.5"></span>
                 Notificação por e-mail
               </li>
-              <li className="text-sm text-gray-700 flex items-start gap-2">
-                <span className="w-1 h-1 bg-blue-600 rounded-full mt-1.5"></span>
+              <li className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                <span className="w-1 h-1 bg-blue-600 dark:bg-purple-400 rounded-full mt-1.5"></span>
                 Aviso na plataforma
               </li>
             </ul>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               O uso continuado da plataforma após as alterações constitui aceitação dos novos Termos.
             </p>
           </CardContent>
         </Card>
 
         {/* Contact */}
-        <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-white">
+        <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-white dark:from-purple-900/20 dark:to-gray-800 dark:bg-gray-800">
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Mail className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5 text-blue-600 dark:text-purple-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-base font-bold text-gray-900 mb-2">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">
                   Dúvidas sobre os Termos?
                 </h3>
-                <p className="text-sm text-gray-700 mb-3">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                   Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato:
                 </p>
                 <div className="space-y-1 mb-4">
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>E-mail:</strong> legal@ticketpass.com
                   </p>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     <strong>Telefone:</strong> (11) 1234-5678
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Link to={createPageUrl("Support")}>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700">
                       Fale Conosco
                     </Button>
                   </Link>
                   <Link to={createPageUrl("Home")}>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" className="dark:border-gray-700 dark:text-gray-300">
                       Voltar ao Início
                     </Button>
                   </Link>

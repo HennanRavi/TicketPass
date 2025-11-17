@@ -128,13 +128,13 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 dark:text-white">
             <Settings className="w-5 h-5" />
             Preferências de Eventos
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="dark:text-gray-400">
             Configure suas preferências para receber recomendações personalizadas
           </DialogDescription>
         </DialogHeader>
@@ -142,7 +142,7 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Favorite Categories */}
           <div>
-            <Label className="text-base font-semibold mb-3 block">
+            <Label className="text-base font-semibold mb-3 block dark:text-white">
               Categorias Favoritas
             </Label>
             <div className="grid grid-cols-2 gap-3">
@@ -152,15 +152,15 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                   onClick={() => toggleCategory(cat.value)}
                   className={`flex items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     formData.favorite_categories.includes(cat.value)
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-600 bg-blue-50 dark:border-purple-600 dark:bg-purple-900/20"
+                      : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                   }`}
                 >
                   <Checkbox
                     checked={formData.favorite_categories.includes(cat.value)}
                     onCheckedChange={() => toggleCategory(cat.value)}
                   />
-                  <span className="text-sm">{cat.label}</span>
+                  <span className="text-sm dark:text-gray-300">{cat.label}</span>
                 </div>
               ))}
             </div>
@@ -168,7 +168,7 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
 
           {/* Preferred States */}
           <div>
-            <Label className="text-base font-semibold mb-3 block">
+            <Label className="text-base font-semibold mb-3 block dark:text-white">
               Estados Preferidos
             </Label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -178,15 +178,15 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                   onClick={() => toggleState(state.uf)}
                   className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-sm ${
                     formData.preferred_states.includes(state.uf)
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-600 bg-blue-50 dark:border-purple-600 dark:bg-purple-900/20"
+                      : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                   }`}
                 >
                   <Checkbox
                     checked={formData.preferred_states.includes(state.uf)}
                     onCheckedChange={() => toggleState(state.uf)}
                   />
-                  <span>{state.uf}</span>
+                  <span className="dark:text-gray-300">{state.uf}</span>
                 </div>
               ))}
             </div>
@@ -194,12 +194,12 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
 
           {/* Price Range */}
           <div>
-            <Label className="text-base font-semibold mb-3 block">
+            <Label className="text-base font-semibold mb-3 block dark:text-white">
               Faixa de Preço Preferida
             </Label>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="price_min" className="text-sm">Mínimo (R$)</Label>
+                <Label htmlFor="price_min" className="text-sm dark:text-gray-300">Mínimo (R$)</Label>
                 <Input
                   id="price_min"
                   type="number"
@@ -207,10 +207,11 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                   step="10"
                   value={formData.price_range_min}
                   onChange={(e) => setFormData({ ...formData, price_range_min: parseFloat(e.target.value) })}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
               <div>
-                <Label htmlFor="price_max" className="text-sm">Máximo (R$)</Label>
+                <Label htmlFor="price_max" className="text-sm dark:text-gray-300">Máximo (R$)</Label>
                 <Input
                   id="price_max"
                   type="number"
@@ -218,6 +219,7 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                   step="10"
                   value={formData.price_range_max}
                   onChange={(e) => setFormData({ ...formData, price_range_max: parseFloat(e.target.value) })}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
             </div>
@@ -225,11 +227,11 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
 
           {/* Notification Preferences */}
           <div>
-            <Label className="text-base font-semibold mb-3 block">
+            <Label className="text-base font-semibold mb-3 block dark:text-white">
               Preferências de Notificação
             </Label>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
                 <Checkbox
                   id="new_events"
                   checked={formData.notification_preferences.new_events}
@@ -243,12 +245,12 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                     })
                   }
                 />
-                <Label htmlFor="new_events" className="text-sm cursor-pointer flex-1">
+                <Label htmlFor="new_events" className="text-sm cursor-pointer flex-1 dark:text-gray-300">
                   Notificar sobre novos eventos nas minhas categorias favoritas
                 </Label>
               </div>
               
-              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
                 <Checkbox
                   id="recommendations"
                   checked={formData.notification_preferences.recommendations}
@@ -262,12 +264,12 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                     })
                   }
                 />
-                <Label htmlFor="recommendations" className="text-sm cursor-pointer flex-1">
+                <Label htmlFor="recommendations" className="text-sm cursor-pointer flex-1 dark:text-gray-300">
                   Receber recomendações personalizadas
                 </Label>
               </div>
               
-              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200">
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
                 <Checkbox
                   id="price_drops"
                   checked={formData.notification_preferences.price_drops}
@@ -281,7 +283,7 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
                     })
                   }
                 />
-                <Label htmlFor="price_drops" className="text-sm cursor-pointer flex-1">
+                <Label htmlFor="price_drops" className="text-sm cursor-pointer flex-1 dark:text-gray-300">
                   Alertar sobre quedas de preço em eventos salvos
                 </Label>
               </div>
@@ -289,14 +291,14 @@ export default function PreferencesModal({ open, onOpenChange, user }) {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="dark:border-gray-700 dark:text-gray-300">
               <X className="w-4 h-4 mr-2" />
               Cancelar
             </Button>
             <Button 
               type="submit" 
               disabled={savePreferencesMutation.isPending}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-purple-600 dark:to-purple-700 dark:hover:from-purple-700 dark:hover:to-purple-800"
             >
               {savePreferencesMutation.isPending ? (
                 <>Salvando...</>

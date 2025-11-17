@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -175,11 +176,11 @@ export default function BankAccountSetup() {
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
+    <div className="min-h-screen py-8 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          className="mb-6"
+          className="mb-6 dark:text-gray-300 dark:hover:bg-gray-800"
           onClick={() => navigate(createPageUrl("OrganizerDashboard"))}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -187,14 +188,14 @@ export default function BankAccountSetup() {
         </Button>
 
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dados Bancários</h1>
-          <p className="text-gray-600">Configure sua conta para receber pagamentos</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dados Bancários</h1>
+          <p className="text-gray-600 dark:text-gray-400">Configure sua conta para receber pagamentos</p>
         </div>
 
         {/* Info Alert */}
-        <Alert className="mb-6 bg-blue-50 border-blue-200">
-          <Shield className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-sm text-blue-900">
+        <Alert className="mb-6 bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+          <Shield className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+          <AlertDescription className="text-sm text-blue-900 dark:text-purple-300">
             <strong>Sistema de Retenção de Fundos:</strong> Os pagamentos ficam retidos por 7 dias 
             antes de serem transferidos para sua conta. Este período permite que participantes solicitem 
             reembolso se necessário.
@@ -202,17 +203,17 @@ export default function BankAccountSetup() {
         </Alert>
 
         {bankAccount && (
-          <Alert className="mb-6 bg-green-50 border-green-200">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-sm text-green-900">
+          <Alert className="mb-6 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <AlertDescription className="text-sm text-green-900 dark:text-green-300">
               <div className="flex items-center justify-between">
                 <span>Você já possui dados bancários cadastrados</span>
                 <Badge className={
                   bankAccount.status === "aprovado" 
-                    ? "bg-green-100 text-green-700" 
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" 
                     : bankAccount.status === "pendente"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
+                    ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400"
+                    : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400"
                 }>
                   {bankAccount.status === "aprovado" ? "✓ Aprovado" : 
                    bankAccount.status === "pendente" ? "⏳ Em Análise" : 
@@ -223,13 +224,13 @@ export default function BankAccountSetup() {
           </Alert>
         )}
 
-        <Card className="border-none shadow-xl">
+        <Card className="border-none shadow-xl dark:bg-gray-800">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 dark:text-white">
               <Landmark className="w-5 h-5" />
               Informações da Conta
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="dark:text-gray-400">
               Preencha os dados da conta que receberá os pagamentos dos eventos
             </CardDescription>
           </CardHeader>
@@ -237,17 +238,17 @@ export default function BankAccountSetup() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Account Type */}
               <div>
-                <Label>Tipo de Conta *</Label>
+                <Label className="dark:text-gray-300">Tipo de Conta *</Label>
                 <Select
                   value={formData.account_type}
                   onValueChange={(value) =>
                     setFormData({ ...formData, account_type: value })
                   }
                 >
-                  <SelectTrigger className="mt-2">
+                  <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                     <SelectItem value="corrente">Conta Corrente</SelectItem>
                     <SelectItem value="poupanca">Conta Poupança</SelectItem>
                   </SelectContent>
@@ -256,15 +257,15 @@ export default function BankAccountSetup() {
 
               {/* Bank Selection */}
               <div>
-                <Label>Banco *</Label>
+                <Label className="dark:text-gray-300">Banco *</Label>
                 <Select
                   value={formData.bank_code}
                   onValueChange={handleBankSelect}
                 >
-                  <SelectTrigger className="mt-2">
+                  <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <SelectValue placeholder="Selecione o banco" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                     {banks.map((bank) => (
                       <SelectItem key={bank.code} value={bank.code}>
                         {bank.code} - {bank.name}
@@ -277,7 +278,7 @@ export default function BankAccountSetup() {
               {/* Agency and Account */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="agency">Agência *</Label>
+                  <Label htmlFor="agency" className="dark:text-gray-300">Agência *</Label>
                   <Input
                     id="agency"
                     value={formData.agency}
@@ -286,11 +287,11 @@ export default function BankAccountSetup() {
                     }
                     placeholder="0001"
                     required
-                    className="mt-2"
+                    className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="account_number">Número da Conta *</Label>
+                  <Label htmlFor="account_number" className="dark:text-gray-300">Número da Conta *</Label>
                   <Input
                     id="account_number"
                     value={formData.account_number}
@@ -299,11 +300,11 @@ export default function BankAccountSetup() {
                     }
                     placeholder="12345678"
                     required
-                    className="mt-2"
+                    className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="account_digit">Dígito *</Label>
+                  <Label htmlFor="account_digit" className="dark:text-gray-300">Dígito *</Label>
                   <Input
                     id="account_digit"
                     value={formData.account_digit}
@@ -313,14 +314,14 @@ export default function BankAccountSetup() {
                     placeholder="9"
                     maxLength={2}
                     required
-                    className="mt-2"
+                    className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
               </div>
 
               {/* Account Holder */}
               <div>
-                <Label htmlFor="account_holder_name">Nome do Titular *</Label>
+                <Label htmlFor="account_holder_name" className="dark:text-gray-300">Nome do Titular *</Label>
                 <Input
                   id="account_holder_name"
                   value={formData.account_holder_name}
@@ -329,16 +330,16 @@ export default function BankAccountSetup() {
                   }
                   placeholder="Nome completo"
                   required
-                  className="mt-2"
+                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Deve ser o mesmo nome cadastrado no banco
                 </p>
               </div>
 
               {/* CPF/CNPJ */}
               <div>
-                <Label htmlFor="cpf_cnpj">CPF ou CNPJ *</Label>
+                <Label htmlFor="cpf_cnpj" className="dark:text-gray-300">CPF ou CNPJ *</Label>
                 <Input
                   id="cpf_cnpj"
                   value={formData.cpf_cnpj}
@@ -347,29 +348,29 @@ export default function BankAccountSetup() {
                   }
                   placeholder="000.000.000-00 ou 00.000.000/0000-00"
                   required
-                  className="mt-2"
+                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               {/* PIX Section */}
-              <div className="pt-6 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-blue-600" />
+              <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-blue-600 dark:text-purple-400" />
                   Chave PIX (Opcional)
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Tipo de Chave PIX</Label>
+                    <Label className="dark:text-gray-300">Tipo de Chave PIX</Label>
                     <Select
                       value={formData.pix_key_type}
                       onValueChange={(value) =>
                         setFormData({ ...formData, pix_key_type: value })
                       }
                     >
-                      <SelectTrigger className="mt-2">
+                      <SelectTrigger className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
                         <SelectItem value="cpf">CPF</SelectItem>
                         <SelectItem value="cnpj">CNPJ</SelectItem>
                         <SelectItem value="email">Email</SelectItem>
@@ -379,7 +380,7 @@ export default function BankAccountSetup() {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="pix_key">Chave PIX</Label>
+                    <Label htmlFor="pix_key" className="dark:text-gray-300">Chave PIX</Label>
                     <Input
                       id="pix_key"
                       value={formData.pix_key}
@@ -387,19 +388,19 @@ export default function BankAccountSetup() {
                         setFormData({ ...formData, pix_key: e.target.value })
                       }
                       placeholder="Sua chave PIX"
-                      className="mt-2"
+                      className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                     />
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   A chave PIX facilita transferências mais rápidas
                 </p>
               </div>
 
               {/* Important Info */}
-              <Alert className="bg-yellow-50 border-yellow-200">
-                <Clock className="h-4 w-4 text-yellow-600" />
-                <AlertDescription className="text-sm text-yellow-900">
+              <Alert className="bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+                <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                <AlertDescription className="text-sm text-yellow-900 dark:text-yellow-300">
                   <strong>Importante:</strong>
                   <ul className="list-disc ml-4 mt-2 space-y-1">
                     <li>Pagamentos são retidos por 7 dias após cada venda</li>
@@ -416,14 +417,14 @@ export default function BankAccountSetup() {
                   type="button"
                   variant="outline"
                   onClick={() => navigate(createPageUrl("OrganizerDashboard"))}
-                  className="flex-1"
+                  className="flex-1 dark:border-gray-700 dark:text-gray-300"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={saveBankAccountMutation.isPending}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
                 >
                   {saveBankAccountMutation.isPending ? (
                     <>

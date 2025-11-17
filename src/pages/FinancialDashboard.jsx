@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -85,23 +86,25 @@ export default function FinancialDashboard() {
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
+    <div className="min-h-screen py-8 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 mb-8">
           <Button
             variant="ghost"
             onClick={() => navigate(createPageUrl("OrganizerDashboard"))}
+            className="dark:text-gray-300 dark:hover:bg-gray-800"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Painel Financeiro</h1>
-            <p className="text-gray-600">Gerencie seus recebimentos e transações</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Painel Financeiro</h1>
+            <p className="text-gray-600 dark:text-gray-400">Gerencie seus recebimentos e transações</p>
           </div>
           <Button
             onClick={() => navigate(createPageUrl("BankAccountSetup"))}
             variant="outline"
+            className="dark:border-gray-700 dark:text-gray-300"
           >
             <CreditCard className="w-4 h-4 mr-2" />
             Dados Bancários
@@ -110,30 +113,30 @@ export default function FinancialDashboard() {
 
         {/* Bank Account Status */}
         {!bankAccount ? (
-          <Alert className="mb-6 bg-yellow-50 border-yellow-200">
-            <AlertCircle className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-sm text-yellow-900 flex items-center justify-between">
+          <Alert className="mb-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+            <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+            <AlertDescription className="text-sm text-yellow-900 dark:text-yellow-300 flex items-center justify-between">
               <span>Você precisa cadastrar seus dados bancários para receber pagamentos</span>
               <Button
                 size="sm"
                 onClick={() => navigate(createPageUrl("BankAccountSetup"))}
-                className="bg-yellow-600 hover:bg-yellow-700"
+                className="bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-700 dark:hover:bg-yellow-800"
               >
                 Cadastrar Agora
               </Button>
             </AlertDescription>
           </Alert>
         ) : bankAccount.status !== "aprovado" ? (
-          <Alert className="mb-6 bg-blue-50 border-blue-200">
-            <Clock className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-sm text-blue-900">
+          <Alert className="mb-6 bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+            <Clock className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+            <AlertDescription className="text-sm text-blue-900 dark:text-purple-300">
               Seus dados bancários estão em análise. Você será notificado quando forem aprovados.
             </AlertDescription>
           </Alert>
         ) : (
-          <Alert className="mb-6 bg-green-50 border-green-200">
-            <CheckCircle2 className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-sm text-green-900">
+          <Alert className="mb-6 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <AlertDescription className="text-sm text-green-900 dark:text-green-300">
               <div className="flex items-center justify-between">
                 <span>Dados bancários aprovados - {bankAccount.bank_name} | Ag: {bankAccount.agency} | Conta: {bankAccount.account_number}-{bankAccount.account_digit}</span>
               </div>
@@ -143,75 +146,75 @@ export default function FinancialDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-none shadow-lg">
+          <Card className="border-none shadow-lg dark:bg-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 R$ {totalRevenue.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-600">Receita Total</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Receita Total</p>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50">
+          <Card className="border-none shadow-lg bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 dark:bg-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-yellow-600" />
+                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/40 rounded-xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
               </div>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 R$ {totalRetained.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-600">Em Retenção (7 dias)</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Em Retenção (7 dias)</p>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 dark:bg-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-blue-600 dark:text-purple-400" />
                 </div>
               </div>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 R$ {totalReleased.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-600">Liberado para Saque</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Liberado para Saque</p>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-lg bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="border-none shadow-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 dark:bg-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
-              <p className="text-3xl font-bold text-gray-900 mb-1">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 R$ {totalProcessed.toFixed(2)}
               </p>
-              <p className="text-sm text-gray-600">Já Transferido</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Já Transferido</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Transactions Table */}
-        <Card className="border-none shadow-lg">
+        <Card className="border-none shadow-lg dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Histórico de Transações</CardTitle>
+            <CardTitle className="dark:text-white">Histórico de Transações</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-4 mb-6">
-                <TabsTrigger value="all">Todas ({transactions.length})</TabsTrigger>
-                <TabsTrigger value="retained">Em Retenção ({retainedTransactions.length})</TabsTrigger>
-                <TabsTrigger value="released">Liberadas ({releasedTransactions.length})</TabsTrigger>
-                <TabsTrigger value="processed">Transferidas ({processedTransactions.length})</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-4 mb-6 dark:bg-gray-700">
+                <TabsTrigger value="all" className="dark:data-[state=active]:bg-purple-600">Todas ({transactions.length})</TabsTrigger>
+                <TabsTrigger value="retained" className="dark:data-[state=active]:bg-purple-600">Em Retenção ({retainedTransactions.length})</TabsTrigger>
+                <TabsTrigger value="released" className="dark:data-[state=active]:bg-purple-600">Liberadas ({releasedTransactions.length})</TabsTrigger>
+                <TabsTrigger value="processed" className="dark:data-[state=active]:bg-purple-600">Transferidas ({processedTransactions.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all">
@@ -237,7 +240,7 @@ export default function FinancialDashboard() {
 function TransactionTable({ transactions }) {
   if (transactions.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
         Nenhuma transação encontrada
       </div>
     );
@@ -247,47 +250,47 @@ function TransactionTable({ transactions }) {
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Data</TableHead>
-            <TableHead>Evento</TableHead>
-            <TableHead>Comprador</TableHead>
-            <TableHead>Valor Bruto</TableHead>
-            <TableHead>Taxa (5%)</TableHead>
-            <TableHead>Valor Líquido</TableHead>
-            <TableHead>Liberação</TableHead>
-            <TableHead>Status</TableHead>
+          <TableRow className="dark:border-gray-700">
+            <TableHead className="dark:text-gray-300">Data</TableHead>
+            <TableHead className="dark:text-gray-300">Evento</TableHead>
+            <TableHead className="dark:text-gray-300">Comprador</TableHead>
+            <TableHead className="dark:text-gray-300">Valor Bruto</TableHead>
+            <TableHead className="dark:text-gray-300">Taxa (5%)</TableHead>
+            <TableHead className="dark:text-gray-300">Valor Líquido</TableHead>
+            <TableHead className="dark:text-gray-300">Liberação</TableHead>
+            <TableHead className="dark:text-gray-300">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell className="text-sm">
+            <TableRow key={transaction.id} className="dark:border-gray-700">
+              <TableCell className="text-sm dark:text-gray-300">
                 {format(new Date(transaction.transaction_date), "dd/MM/yyyy HH:mm")}
               </TableCell>
-              <TableCell className="font-medium">{transaction.event_title}</TableCell>
-              <TableCell className="text-sm">{transaction.buyer_name}</TableCell>
-              <TableCell className="font-semibold">
+              <TableCell className="font-medium dark:text-white">{transaction.event_title}</TableCell>
+              <TableCell className="text-sm dark:text-gray-300">{transaction.buyer_name}</TableCell>
+              <TableCell className="font-semibold dark:text-white">
                 R$ {transaction.amount.toFixed(2)}
               </TableCell>
-              <TableCell className="text-red-600 text-sm">
+              <TableCell className="text-red-600 dark:text-red-400 text-sm">
                 -R$ {transaction.platform_fee.toFixed(2)}
               </TableCell>
-              <TableCell className="font-bold text-green-600">
+              <TableCell className="font-bold text-green-600 dark:text-green-400">
                 R$ {transaction.net_amount.toFixed(2)}
               </TableCell>
-              <TableCell className="text-sm">
+              <TableCell className="text-sm dark:text-gray-300">
                 {format(new Date(transaction.release_date), "dd/MM/yyyy")}
               </TableCell>
               <TableCell>
                 <Badge
                   className={
                     transaction.status === "processado"
-                      ? "bg-green-100 text-green-700"
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
                       : transaction.status === "liberado"
-                      ? "bg-blue-100 text-blue-700"
+                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400"
                       : transaction.status === "retido"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-gray-100 text-gray-700"
+                      ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   }
                 >
                   {transaction.status === "retido" && "🔒 Retido"}

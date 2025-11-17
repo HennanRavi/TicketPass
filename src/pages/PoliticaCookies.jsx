@@ -51,9 +51,9 @@ export default function PoliticaCookies() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-700 text-white py-16">
+      <div className="bg-gradient-to-br from-blue-600 to-blue-700 dark:from-purple-700 dark:to-purple-900 text-white py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl mb-6">
             <Cookie className="w-8 h-8" />
@@ -61,7 +61,7 @@ export default function PoliticaCookies() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Política de Cookies
           </h1>
-          <p className="text-xl text-blue-100">
+          <p className="text-xl text-blue-100 dark:text-purple-100">
             Última atualização: {new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
@@ -69,20 +69,20 @@ export default function PoliticaCookies() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Introduction */}
-        <Card className="border-none shadow-lg mb-8">
+        <Card className="border-none shadow-lg mb-8 dark:bg-gray-800">
           <CardContent className="p-8">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-6 h-6 text-blue-600 dark:text-purple-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   O que são cookies?
                 </h2>
-                <p className="text-gray-700 leading-relaxed mb-4">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                   Cookies são pequenos arquivos de texto que são armazenados no seu dispositivo quando você visita um site. Eles são amplamente utilizados para fazer os sites funcionarem de forma mais eficiente, bem como para fornecer informações aos proprietários do site.
                 </p>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   No TicketPass, utilizamos cookies para melhorar sua experiência, personalizar conteúdo, analisar o tráfego e fornecer recursos de mídia social. Você tem controle sobre quais cookies deseja aceitar.
                 </p>
               </div>
@@ -92,32 +92,32 @@ export default function PoliticaCookies() {
 
         {/* Cookie Types */}
         <div className="space-y-6 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             Tipos de Cookies que Utilizamos
           </h2>
 
           {cookieTypes.map((type, index) => {
             const Icon = type.icon;
             return (
-              <Card key={index} className="border-none shadow-lg">
-                <CardHeader className={`bg-gradient-to-r from-${type.color}-50 to-white`}>
-                  <CardTitle className="flex items-center gap-3">
-                    <div className={`w-10 h-10 bg-${type.color}-100 rounded-lg flex items-center justify-center`}>
-                      <Icon className={`w-5 h-5 text-${type.color}-600`} />
+              <Card key={index} className="border-none shadow-lg dark:bg-gray-800">
+                <CardHeader className={`bg-gradient-to-r from-${type.color}-50 to-white dark:from-${type.color}-900/20 dark:to-gray-800`}>
+                  <CardTitle className="flex items-center gap-3 dark:text-white">
+                    <div className={`w-10 h-10 bg-${type.color}-100 dark:bg-${type.color}-900/40 rounded-lg flex items-center justify-center`}>
+                      <Icon className={`w-5 h-5 text-${type.color}-600 dark:text-${type.color}-400`} />
                     </div>
                     {type.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <p className="text-gray-700 mb-4">{type.description}</p>
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">{type.description}</p>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 mb-2">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
                       Exemplos de uso:
                     </p>
                     <ul className="space-y-2">
                       {type.examples.map((example, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
-                          <div className={`w-1.5 h-1.5 bg-${type.color}-600 rounded-full`}></div>
+                        <li key={idx} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                          <div className={`w-1.5 h-1.5 bg-${type.color}-600 dark:bg-${type.color}-400 rounded-full`}></div>
                           {example}
                         </li>
                       ))}
@@ -130,20 +130,20 @@ export default function PoliticaCookies() {
         </div>
 
         {/* Duration */}
-        <Card className="border-none shadow-lg mb-8">
+        <Card className="border-none shadow-lg mb-8 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Duração dos Cookies</CardTitle>
+            <CardTitle className="dark:text-white">Duração dos Cookies</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Cookies de Sessão</h3>
-              <p className="text-gray-700 text-sm">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cookies de Sessão</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
                 São temporários e expiram quando você fecha o navegador. Usados principalmente para manter sua sessão ativa enquanto você navega no site.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Cookies Persistentes</h3>
-              <p className="text-gray-700 text-sm">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cookies Persistentes</h3>
+              <p className="text-gray-700 dark:text-gray-300 text-sm">
                 Permanecem no seu dispositivo por um período determinado (até 12 meses) e são ativados cada vez que você visita nosso site. Usados para lembrar suas preferências e melhorar sua experiência.
               </p>
             </div>
@@ -151,47 +151,47 @@ export default function PoliticaCookies() {
         </Card>
 
         {/* Control */}
-        <Card className="border-none shadow-lg mb-8">
+        <Card className="border-none shadow-lg mb-8 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Como Controlar os Cookies</CardTitle>
+            <CardTitle className="dark:text-white">Como Controlar os Cookies</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-gray-300">
               Você tem o direito de decidir se aceita ou rejeita cookies. Pode exercer suas preferências de cookies através de:
             </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-blue-600">1</span>
+                <div className="w-6 h-6 bg-blue-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-blue-600 dark:text-purple-400">1</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Banner de Cookies</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-semibold text-gray-900 dark:text-white">Banner de Cookies</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Ao visitar nosso site pela primeira vez, você pode escolher suas preferências através do banner de cookies.
                   </p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-blue-600">2</span>
+                <div className="w-6 h-6 bg-blue-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-blue-600 dark:text-purple-400">2</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Configurações do Navegador</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-semibold text-gray-900 dark:text-white">Configurações do Navegador</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     A maioria dos navegadores permite que você recuse ou aceite cookies através das configurações.
                   </p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-blue-600">3</span>
+                <div className="w-6 h-6 bg-blue-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-blue-600 dark:text-purple-400">3</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Gerenciar Preferências</p>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="font-semibold text-gray-900 dark:text-white">Gerenciar Preferências</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Você pode alterar suas preferências a qualquer momento clicando no botão abaixo.
                   </p>
-                  <Button onClick={handleManageCookies} size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Button onClick={handleManageCookies} size="sm" className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700">
                     <Cookie className="w-4 h-4 mr-2" />
                     Gerenciar Cookies
                   </Button>
@@ -202,12 +202,12 @@ export default function PoliticaCookies() {
         </Card>
 
         {/* Third Party */}
-        <Card className="border-none shadow-lg mb-8">
+        <Card className="border-none shadow-lg mb-8 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Cookies de Terceiros</CardTitle>
+            <CardTitle className="dark:text-white">Cookies de Terceiros</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               Além dos nossos próprios cookies, também podemos usar cookies de terceiros para:
             </p>
             <ul className="space-y-2">
@@ -217,8 +217,8 @@ export default function PoliticaCookies() {
                 "Processamento de pagamentos",
                 "Suporte ao cliente"
               ].map((item, idx) => (
-                <li key={idx} className="flex items-center gap-2 text-gray-700">
-                  <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                <li key={idx} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <div className="w-2 h-2 bg-blue-600 dark:bg-purple-400 rounded-full"></div>
                   {item}
                 </li>
               ))}
@@ -227,22 +227,22 @@ export default function PoliticaCookies() {
         </Card>
 
         {/* Contact */}
-        <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-white">
+        <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-white dark:from-purple-900/20 dark:to-gray-800 dark:bg-gray-800">
           <CardContent className="p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-3">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
               Dúvidas sobre nossa Política de Cookies?
             </h3>
-            <p className="text-gray-700 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               Se você tiver alguma dúvida sobre como usamos cookies, entre em contato conosco.
             </p>
             <div className="flex gap-3">
               <Link to={createPageUrl("Support")}>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700">
                   Fale Conosco
                 </Button>
               </Link>
               <Link to={createPageUrl("Home")}>
-                <Button variant="outline">
+                <Button variant="outline" className="dark:border-gray-700 dark:text-gray-300">
                   Voltar ao Início
                 </Button>
               </Link>

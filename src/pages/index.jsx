@@ -64,6 +64,12 @@ import AdminEvents from "./AdminEvents";
 
 import AdminReports from "./AdminReports";
 
+import AdminRefunds from "./AdminRefunds";
+
+import Playlists from "./Playlists";
+
+import AdminSupport from "./AdminSupport";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -131,6 +137,12 @@ const PAGES = {
     AdminEvents: AdminEvents,
     
     AdminReports: AdminReports,
+    
+    AdminRefunds: AdminRefunds,
+    
+    Playlists: Playlists,
+    
+    AdminSupport: AdminSupport,
     
 }
 
@@ -222,6 +234,12 @@ function PagesContent() {
                 <Route path="/AdminEvents" element={<AdminEvents />} />
                 
                 <Route path="/AdminReports" element={<AdminReports />} />
+                
+                <Route path="/AdminRefunds" element={<AdminRefunds />} />
+                
+                <Route path="/Playlists" element={<Playlists />} />
+                
+                <Route path="/AdminSupport" element={<AdminSupport />} />
                 
             </Routes>
         </Layout>

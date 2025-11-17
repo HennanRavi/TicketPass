@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -14,6 +15,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import NotificationBell from "./components/notifications/NotificationBell";
 import CookieBanner from "./components/cookies/CookieBanner";
+import { usePushNotifications } from "./components/notifications/usePushNotifications";
+import { useNotificationScheduler } from "./components/notifications/NotificationScheduler";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -43,6 +46,10 @@ export default function Layout({ children, currentPageName }) {
       window.removeEventListener('focus', loadUser);
     };
   }, [location.pathname]);
+
+  // Initialize push notifications and schedulers
+  usePushNotifications(user);
+  useNotificationScheduler(user);
 
   // Load dark mode preference
   useEffect(() => {
@@ -97,6 +104,10 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = () => {
     base44.auth.logout();
+  };
+
+  const handleLogin = () => {
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   return (
@@ -404,7 +415,7 @@ export default function Layout({ children, currentPageName }) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => base44.auth.redirectToLogin()}
+                  onClick={handleLogin}
                   className={`h-8 text-sm ${darkMode ? 'border-gray-700 text-white hover:bg-gray-800' : ''}`}
                 >
                   Entrar
@@ -439,7 +450,7 @@ export default function Layout({ children, currentPageName }) {
             darkMode ? 'bg-gray-900' : 'bg-white'
           }`}>
             {/* Menu Header */}
-            <div className={`sticky top-0 text-white p-4 flex items-center justify-between border-b ${
+            <div className={`sticky top-0 text-white p-4 flex items-center justify-between border-b z-10 ${
               darkMode 
                 ? 'bg-gradient-to-r from-purple-600 to-purple-700 border-purple-500/20' 
                 : 'bg-gradient-to-r from-blue-600 to-indigo-600 border-blue-500/20'
@@ -459,7 +470,7 @@ export default function Layout({ children, currentPageName }) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-white hover:bg-white/20 h-10 w-10"
+                className="text-white hover:bg-white/20 h-10 w-10 flex-shrink-0"
               >
                 <X className="w-6 h-6" />
               </Button>
@@ -476,15 +487,15 @@ export default function Layout({ children, currentPageName }) {
                 </h3>
                 <button
                   onClick={toggleDarkMode}
-                  className={`flex items-center justify-between w-full px-4 py-3 rounded-xl font-medium transition-all ${
+                  className={`flex items-center justify-between w-full px-4 py-3 rounded-xl font-medium transition-all touch-manipulation ${
                     darkMode ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-50 text-blue-600'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  <div className="flex items-center gap-3 pointer-events-none">
+                    {darkMode ? <Sun className="w-5 h-5 flex-shrink-0" /> : <Moon className="w-5 h-5 flex-shrink-0" />}
                     <span>Tema {darkMode ? 'Escuro' : 'Claro'}</span>
                   </div>
-                  <div className={`w-12 h-6 rounded-full transition-colors ${
+                  <div className={`w-12 h-6 rounded-full transition-colors flex-shrink-0 pointer-events-none ${
                     darkMode ? 'bg-purple-600' : 'bg-blue-600'
                   } relative`}>
                     <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-transform ${
@@ -501,38 +512,38 @@ export default function Layout({ children, currentPageName }) {
                 }`}>
                   Navegação
                 </h3>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <Link
                     to={createPageUrl("Home")}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                       location.pathname === createPageUrl("Home")
                         ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                         : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                     }`}
                   >
-                    <Search className="w-5 h-5" />
+                    <Search className="w-5 h-5 flex-shrink-0" />
                     <span>Explorar Eventos</span>
                   </Link>
                   <Link
                     to={createPageUrl("SaibaMais")}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                       location.pathname === createPageUrl("SaibaMais")
                         ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                         : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                     }`}
                   >
-                    <Info className="w-5 h-5" />
+                    <Info className="w-5 h-5 flex-shrink-0" />
                     <span>Saiba Mais</span>
                   </Link>
                   <Link
                     to={createPageUrl("Support")}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                       location.pathname === createPageUrl("Support")
                         ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                         : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                     }`}
                   >
-                    <HelpCircle className="w-5 h-5" />
+                    <HelpCircle className="w-5 h-5 flex-shrink-0" />
                     <span>Suporte</span>
                   </Link>
                 </div>
@@ -546,38 +557,38 @@ export default function Layout({ children, currentPageName }) {
                   }`}>
                     Minha Conta
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <Link
                       to={createPageUrl("MyTickets")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("MyTickets")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <Ticket className="w-5 h-5" />
+                      <Ticket className="w-5 h-5 flex-shrink-0" />
                       <span>Meus Ingressos</span>
                     </Link>
                     <Link
                       to={createPageUrl("UserSettings")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("UserSettings")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <Settings className="w-5 h-5" />
+                      <Settings className="w-5 h-5 flex-shrink-0" />
                       <span>Configurações</span>
                     </Link>
                     <Link
                       to={createPageUrl("Notifications")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("Notifications")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <Info className="w-5 h-5" />
+                      <Info className="w-5 h-5 flex-shrink-0" />
                       <span>Notificações</span>
                     </Link>
                   </div>
@@ -592,27 +603,27 @@ export default function Layout({ children, currentPageName }) {
                   }`}>
                     Organizador
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <Link
                       to={createPageUrl("OrganizerDashboard")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("OrganizerDashboard")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-blue-50 text-blue-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <BarChart3 className="w-5 h-5" />
+                      <BarChart3 className="w-5 h-5 flex-shrink-0" />
                       <span>Dashboard</span>
                     </Link>
                     <Link
                       to={createPageUrl("CreateEvent")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium text-white shadow-lg hover:shadow-xl transition-all touch-manipulation ${
                         darkMode 
-                          ? 'bg-gradient-to-r from-orange-500 to-orange-600' 
-                          : 'bg-gradient-to-r from-green-500 to-emerald-600'
+                          ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
+                          : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
                       }`}
                     >
-                      <Plus className="w-5 h-5" />
+                      <Plus className="w-5 h-5 flex-shrink-0" />
                       <span>Criar Evento</span>
                     </Link>
                   </div>
@@ -627,38 +638,38 @@ export default function Layout({ children, currentPageName }) {
                   }`}>
                     Administração
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-2">
                     <Link
                       to={createPageUrl("ValidateTicket")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("ValidateTicket")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-purple-50 text-purple-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <CheckCircle2 className="w-5 h-5" />
+                      <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
                       <span>Validar Ingresso</span>
                     </Link>
                     <Link
                       to={createPageUrl("CategoryManagement")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("CategoryManagement")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-purple-50 text-purple-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <FileText className="w-5 h-5" />
+                      <FileText className="w-5 h-5 flex-shrink-0" />
                       <span>Gerenciar Categorias</span>
                     </Link>
                     <Link
                       to={createPageUrl("AdminBankSetup")}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium transition-all touch-manipulation ${
                         location.pathname === createPageUrl("AdminBankSetup")
                           ? (darkMode ? 'bg-purple-500/20 text-purple-400 shadow-sm' : 'bg-purple-50 text-purple-600 shadow-sm')
                           : (darkMode ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50')
                       }`}
                     >
-                      <Landmark className="w-5 h-5" />
+                      <Landmark className="w-5 h-5 flex-shrink-0" />
                       <span>Conta Bancária</span>
                     </Link>
                   </div>
@@ -673,11 +684,11 @@ export default function Layout({ children, currentPageName }) {
                       handleLogout();
                       setMobileMenuOpen(false);
                     }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-red-600 transition-all w-full ${
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl font-medium text-red-600 transition-all w-full touch-manipulation ${
                       darkMode ? 'hover:bg-red-900/20' : 'hover:bg-red-50'
                     }`}
                   >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-5 h-5 flex-shrink-0" />
                     <span>Sair da Conta</span>
                   </button>
                 </div>
@@ -688,16 +699,16 @@ export default function Layout({ children, currentPageName }) {
                 <div className={`pt-4 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                   <button
                     onClick={() => {
-                      base44.auth.redirectToLogin();
+                      handleLogin();
                       setMobileMenuOpen(false);
                     }}
-                    className={`flex items-center justify-center gap-3 px-4 py-3 rounded-xl font-medium text-white transition-all w-full shadow-lg ${
+                    className={`flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl font-medium text-white transition-all w-full shadow-lg touch-manipulation ${
                       darkMode 
                         ? 'bg-purple-600 hover:bg-purple-700' 
                         : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                   >
-                    <User className="w-5 h-5" />
+                    <User className="w-5 h-5 flex-shrink-0" />
                     <span>Entrar</span>
                   </button>
                 </div>
@@ -842,3 +853,4 @@ export default function Layout({ children, currentPageName }) {
     </div>
   );
 }
+

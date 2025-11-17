@@ -1,13 +1,6 @@
-import React from "react";
-import { MapPin, Tag, DollarSign, Calendar as CalendarIcon, Navigation, Bookmark } from "lucide-react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -15,47 +8,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Calendar as CalendarIcon, MapPin, X, Save, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-const states = [
-  { uf: "AC", name: "Acre" },
-  { uf: "AL", name: "Alagoas" },
-  { uf: "AP", name: "Amapá" },
-  { uf: "AM", name: "Amazonas" },
-  { uf: "BA", name: "Bahia" },
-  { uf: "CE", name: "Ceará" },
-  { uf: "DF", name: "Distrito Federal" },
-  { uf: "ES", name: "Espírito Santo" },
-  { uf: "GO", name: "Goiás" },
-  { uf: "MA", name: "Maranhão" },
-  { uf: "MT", name: "Mato Grosso" },
-  { uf: "MS", name: "Mato Grosso do Sul" },
-  { uf: "MG", name: "Minas Gerais" },
-  { uf: "PA", name: "Pará" },
-  { uf: "PB", name: "Paraíba" },
-  { uf: "PR", name: "Paraná" },
-  { uf: "PE", name: "Pernambuco" },
-  { uf: "PI", name: "Piauí" },
-  { uf: "RJ", name: "Rio de Janeiro" },
-  { uf: "RN", name: "Rio Grande do Norte" },
-  { uf: "RS", name: "Rio Grande do Sul" },
-  { uf: "RO", name: "Rondônia" },
-  { uf: "RR", name: "Roraima" },
-  { uf: "SC", name: "Santa Catarina" },
-  { uf: "SP", name: "São Paulo" },
-  { uf: "SE", name: "Sergipe" },
-  { uf: "TO", name: "Tocantins" },
+const brazilianStates = [
+  { value: "all", label: "Todos os Estados" },
+  { value: "AC", label: "Acre" },
+  { value: "AL", label: "Alagoas" },
+  { value: "AP", label: "Amapá" },
+  { value: "AM", label: "Amazonas" },
+  { value: "BA", label: "Bahia" },
+  { value: "CE", label: "Ceará" },
+  { value: "DF", label: "Distrito Federal" },
+  { value: "ES", label: "Espírito Santo" },
+  { value: "GO", label: "Goiás" },
+  { value: "MA", label: "Maranhão" },
+  { value: "MT", label: "Mato Grosso" },
+  { value: "MS", label: "Mato Grosso do Sul" },
+  { value: "MG", label: "Minas Gerais" },
+  { value: "PA", label: "Pará" },
+  { value: "PB", label: "Paraíba" },
+  { value: "PR", label: "Paraná" },
+  { value: "PE", label: "Pernambuco" },
+  { value: "PI", label: "Piauí" },
+  { value: "RJ", label: "Rio de Janeiro" },
+  { value: "RN", label: "Rio Grande do Norte" },
+  { value: "RS", label: "Rio Grande do Sul" },
+  { value: "RO", label: "Rondônia" },
+  { value: "RR", label: "Roraima" },
+  { value: "SC", label: "Santa Catarina" },
+  { value: "SP", label: "São Paulo" },
+  { value: "SE", label: "Sergipe" },
+  { value: "TO", label: "Tocantins" },
 ];
 
 const categories = [
-  { value: "show", label: "Show" },
-  { value: "teatro", label: "Teatro" },
-  { value: "esporte", label: "Esporte" },
-  { value: "festival", label: "Festival" },
-  { value: "conferencia", label: "Conferência" },
-  { value: "workshop", label: "Workshop" },
-  { value: "outro", label: "Outro" },
+  { value: "all", label: "Todas as Categorias" },
+  { value: "show", label: "🎤 Show" },
+  { value: "teatro", label: "🎭 Teatro" },
+  { value: "esporte", label: "⚽ Esporte" },
+  { value: "festival", label: "🎪 Festival" },
+  { value: "conferencia", label: "📊 Conferência" },
+  { value: "workshop", label: "🛠️ Workshop" },
+  { value: "outro", label: "📌 Outro" },
 ];
 
 export default function EventFilters({
@@ -67,52 +66,53 @@ export default function EventFilters({
   userLocation,
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* State */}
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {/* State Filter */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <MapPin className="w-4 h-4 text-blue-600" />
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">
+            <MapPin className="w-4 h-4 inline mr-1" />
             Estado
-          </label>
-          <Select
-            value={filters.state}
-            onValueChange={(value) => {
-              onFilterChange({ state: value, city: "all" });
-            }}
-          >
-            <SelectTrigger>
+          </Label>
+          <Select value={filters.state} onValueChange={(value) => onFilterChange({ state: value, city: "all" })}>
+            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os Estados</SelectItem>
-              {states.map((state) => (
-                <SelectItem key={state.uf} value={state.uf}>
-                  {state.name}
+            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+              {brazilianStates.map((state) => (
+                <SelectItem 
+                  key={state.value} 
+                  value={state.value}
+                  className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  {state.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* City */}
+        {/* City Filter */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <MapPin className="w-4 h-4 text-green-600" />
-            Cidade
-          </label>
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Cidade</Label>
           <Select
             value={filters.city}
             onValueChange={(value) => onFilterChange({ city: value })}
-            disabled={filters.state === "all"}
+            disabled={filters.state === "all" || availableCities.length === 0}
           >
-            <SelectTrigger>
-              <SelectValue />
+            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+              <SelectValue placeholder="Selecione uma cidade" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as Cidades</SelectItem>
+            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+              <SelectItem value="all" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                Todas as Cidades
+              </SelectItem>
               {availableCities.map((city) => (
-                <SelectItem key={city} value={city}>
+                <SelectItem 
+                  key={city} 
+                  value={city}
+                  className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
                   {city}
                 </SelectItem>
               ))}
@@ -120,23 +120,20 @@ export default function EventFilters({
           </Select>
         </div>
 
-        {/* Category */}
+        {/* Category Filter */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <Tag className="w-4 h-4 text-purple-600" />
-            Categoria
-          </label>
-          <Select
-            value={filters.category}
-            onValueChange={(value) => onFilterChange({ category: value })}
-          >
-            <SelectTrigger>
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Categoria</Label>
+          <Select value={filters.category} onValueChange={(value) => onFilterChange({ category: value })}>
+            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as Categorias</SelectItem>
+            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
               {categories.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
+                <SelectItem 
+                  key={cat.value} 
+                  value={cat.value}
+                  className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
                   {cat.label}
                 </SelectItem>
               ))}
@@ -146,71 +143,131 @@ export default function EventFilters({
 
         {/* Start Date */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-            <CalendarIcon className="w-4 h-4 text-orange-600" />
-            Data Inicial
-          </label>
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Data Inicial</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
-                {filters.startDate
-                  ? format(filters.startDate, "dd 'de' MMMM", { locale: ptBR })
-                  : "Selecione..."}
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-left font-normal bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {filters.startDate ? format(filters.startDate, "dd/MM/yyyy") : "Selecione"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
               <Calendar
                 mode="single"
                 selected={filters.startDate}
                 onSelect={(date) => onFilterChange({ startDate: date })}
-                locale={ptBR}
+                className="dark:text-gray-100"
               />
             </PopoverContent>
           </Popover>
         </div>
+
+        {/* End Date */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">Data Final</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-left font-normal bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {filters.endDate ? format(filters.endDate, "dd/MM/yyyy") : "Selecione"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+              <Calendar
+                mode="single"
+                selected={filters.endDate}
+                onSelect={(date) => onFilterChange({ endDate: date })}
+                className="dark:text-gray-100"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Sort By */}
+        <div>
+          <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">
+            <TrendingUp className="w-4 h-4 inline mr-1" />
+            Ordenar Por
+          </Label>
+          <Select value={filters.sortBy} onValueChange={(value) => onFilterChange({ sortBy: value })}>
+            <SelectTrigger className="bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+              <SelectItem value="date" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                📅 Data
+              </SelectItem>
+              <SelectItem value="rating" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                ⭐ Avaliação
+              </SelectItem>
+              <SelectItem value="price_low" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                💰 Preço (Menor)
+              </SelectItem>
+              <SelectItem value="price_high" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                💎 Preço (Maior)
+              </SelectItem>
+              <SelectItem value="popularity" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800">
+                🔥 Popularidade
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Price Range */}
-      <div className="mt-6">
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-3">
-          <DollarSign className="w-4 h-4 text-green-600" />
+      <div className="mb-4">
+        <Label className="text-sm font-medium mb-2 block text-gray-700 dark:text-gray-300">
           Faixa de Preço: R$ {filters.priceRange[0]} - R$ {filters.priceRange[1] === 1000 ? "1000+" : filters.priceRange[1]}
-        </label>
+        </Label>
         <Slider
           value={filters.priceRange}
           onValueChange={(value) => onFilterChange({ priceRange: value })}
           max={1000}
           step={10}
-          className="w-full"
+          className="mt-2"
         />
       </div>
 
-      {/* Additional Options */}
-      <div className="flex flex-wrap items-center gap-3 mt-6 pt-6 border-t border-gray-200">
-        {userLocation && (
+      {/* Sort by Proximity */}
+      {userLocation && (
+        <div className="mb-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
               checked={filters.sortByProximity}
               onChange={(e) => onFilterChange({ sortByProximity: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded"
+              className="w-4 h-4 text-blue-600 dark:text-purple-600 bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-purple-500"
             />
-            <Navigation className="w-4 h-4 text-blue-600" />
-            <span className="text-sm text-gray-700">Ordenar por proximidade</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              📍 Ordenar por proximidade
+            </span>
           </label>
-        )}
-
-        <div className="ml-auto flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onSaveSearch}
-            className="gap-2"
-          >
-            <Bookmark className="w-4 h-4" />
-            Salvar Busca
-          </Button>
         </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <Button
+          onClick={onClearFilters}
+          variant="outline"
+          className="flex-1 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Limpar
+        </Button>
+        <Button
+          onClick={onSaveSearch}
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white dark:bg-purple-600 dark:hover:bg-purple-700 dark:text-white"
+        >
+          <Save className="w-4 h-4 mr-2" />
+          Salvar Busca
+        </Button>
       </div>
     </div>
   );

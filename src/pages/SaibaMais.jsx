@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -134,7 +135,7 @@ export default function SaibaMais() {
               size="lg"
               variant="outline"
               onClick={() => navigate(createPageUrl("Home"))}
-              className="bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 text-lg px-8 py-6"
+              className="bg-white/50 backdrop-blur-sm border-white text-gray-900 hover:bg-white/70 dark:bg-white/10 dark:border-white/30 dark:text-white dark:hover:bg-white/20 text-lg px-8 py-6 shadow-xl"
             >
               <Search className="w-5 h-5 mr-2" />
               Buscar Eventos

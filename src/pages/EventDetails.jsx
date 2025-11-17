@@ -15,6 +15,25 @@ import PurchaseCard from "../components/events/PurchaseCard";
 import ReviewSection from "../components/reviews/ReviewSection";
 import OrganizerRating from "../components/organizer/OrganizerRating";
 import LoginModal from "../components/auth/LoginModal";
+import EventMap from "../components/map/EventMap";
+
+// Track event view in localStorage
+const trackEventView = (eventId) => {
+  try {
+    const viewedEvents = JSON.parse(localStorage.getItem('viewedEvents') || '{}');
+    
+    if (!viewedEvents[eventId]) {
+      viewedEvents[eventId] = { count: 0, lastViewed: null, firstViewed: new Date().toISOString() };
+    }
+    
+    viewedEvents[eventId].count += 1;
+    viewedEvents[eventId].lastViewed = new Date().toISOString();
+    
+    localStorage.setItem('viewedEvents', JSON.stringify(viewedEvents));
+  } catch (error) {
+    console.error("Error tracking event view:", error);
+  }
+};
 
 export default function EventDetails() {
   const navigate = useNavigate();
@@ -23,12 +42,17 @@ export default function EventDetails() {
   const eventId = urlParams.get("id");
 
   const [user, setUser] = useState(null);
-  const [isPurchasing, setIsPurchasing] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
+
+  useEffect(() => {
+    if (eventId) {
+      trackEventView(eventId);
+    }
+  }, [eventId]);
 
   const { data: event, isLoading } = useQuery({
     queryKey: ["event", eventId],
@@ -128,20 +152,17 @@ export default function EventDetails() {
     },
   });
 
-  const purchaseTicket = async (quantity) => {
+  const handlePurchaseRedirect = async (quantity) => {
     if (!user) {
-      // Abrir modal de login ao invés de redirecionar
       setShowLoginModal(true);
       return;
     }
 
-    // Redirect to checkout page
     navigate(`${createPageUrl("Checkout")}?event=${eventId}&quantity=${quantity}`);
   };
 
   const handleLoginSuccess = () => {
     setShowLoginModal(false);
-    // Recarregar dados do usuário
     base44.auth.me().then(setUser).catch(() => setUser(null));
     toast.success("Login realizado com sucesso!");
   };
@@ -179,9 +200,7 @@ export default function EventDetails() {
         </Button>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image */}
             <div className="relative h-96 rounded-3xl overflow-hidden bg-gradient-to-br from-blue-400 to-blue-600 dark:from-purple-800 dark:to-purple-900 shadow-2xl">
               {event.image_url ? (
                 <img
@@ -195,7 +214,6 @@ export default function EventDetails() {
                 </div>
               )}
               
-              {/* Rating Badge */}
               {averageRating > 0 && (
                 <div className="absolute top-6 left-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl px-4 py-2 flex items-center gap-2 shadow-lg">
                   <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -207,15 +225,14 @@ export default function EventDetails() {
               )}
             </div>
 
-            {/* Organizer Rating */}
             {organizer && organizer.organizer_reviews_count > 0 && (
               <OrganizerRating organizer={organizer} />
             )}
 
-            {/* Tabs */}
             <Tabs defaultValue="info" className="w-full">
-              <TabsList className="w-full grid grid-cols-2 dark:bg-gray-800">
+              <TabsList className="w-full grid grid-cols-3 dark:bg-gray-800">
                 <TabsTrigger value="info" className="dark:data-[state=active]:bg-purple-600">Informações</TabsTrigger>
+                <TabsTrigger value="location" className="dark:data-[state=active]:bg-purple-600">Localização</TabsTrigger>
                 <TabsTrigger value="reviews" className="dark:data-[state=active]:bg-purple-600">
                   Avaliações ({reviews.length})
                 </TabsTrigger>
@@ -228,7 +245,6 @@ export default function EventDetails() {
                   availableTickets={availableTickets}
                 />
 
-                {/* Description */}
                 <Card className="border-none shadow-lg dark:bg-gray-800">
                   <CardHeader>
                     <CardTitle className="dark:text-white">Sobre o Evento</CardTitle>
@@ -239,6 +255,10 @@ export default function EventDetails() {
                     </p>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="location" className="mt-6">
+                <EventMap event={event} height="500px" />
               </TabsContent>
 
               <TabsContent value="reviews" className="space-y-6 mt-6">
@@ -256,20 +276,18 @@ export default function EventDetails() {
             </Tabs>
           </div>
 
-          {/* Purchase Card */}
           <div className="lg:col-span-1">
             <PurchaseCard
               event={event}
               availableTickets={availableTickets}
               user={user}
-              isPurchasing={isPurchasing}
-              onPurchase={purchaseTicket}
+              isPurchasing={false}
+              onPurchase={handlePurchaseRedirect}
             />
           </div>
         </div>
       </div>
 
-      {/* Login Modal */}
       <LoginModal
         open={showLoginModal}
         onOpenChange={setShowLoginModal}

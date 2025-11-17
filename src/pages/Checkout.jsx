@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,7 +30,7 @@ import { ptBR } from "date-fns/locale";
 // PAYMENT_MODE:
 // - "simulate": Modo simulado para testes (nenhum pagamento real)
 // - "pagbank": Integração real com PagBank
-const PAYMENT_MODE = "pagbank"; // Altere para "simulate" para testes
+const PAYMENT_MODE = "simulate"; // Altere para "pagbank" quando configurar o gateway
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -429,10 +430,10 @@ export default function Checkout() {
   if (!event) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <Card className="max-w-md">
+        <Card className="max-w-md dark:bg-gray-800">
           <CardContent className="p-8 text-center">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Evento não encontrado</h2>
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4 dark:text-red-400" />
+            <h2 className="text-xl font-bold text-gray-900 mb-2 dark:text-white">Evento não encontrado</h2>
             <Button onClick={() => navigate(createPageUrl("Home"))}>
               Voltar para Eventos
             </Button>
@@ -443,11 +444,11 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen py-8 bg-gray-50">
+    <div className="min-h-screen py-8 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <Button
           variant="ghost"
-          className="mb-6"
+          className="mb-6 dark:text-gray-300 dark:hover:bg-gray-800"
           onClick={() => navigate(`${createPageUrl("EventDetails")}?id=${eventId}`)}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -455,9 +456,9 @@ export default function Checkout() {
         </Button>
 
         {PAYMENT_MODE === "simulate" && (
-          <Alert className="mb-6 bg-yellow-50 border-yellow-200">
-            <AlertCircle className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-sm text-yellow-900">
+          <Alert className="mb-6 bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800">
+            <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+            <AlertDescription className="text-sm text-yellow-900 dark:text-yellow-300">
               <strong>Modo Simulado:</strong> Esta é uma simulação de pagamento para desenvolvimento. 
               Nenhum pagamento real será processado.
             </AlertDescription>
@@ -465,18 +466,18 @@ export default function Checkout() {
         )}
 
         {PAYMENT_MODE === "pagbank" && (!adminAccount || !adminAccount.pagbank_token) && (
-          <Alert className="mb-6 bg-red-50 border-red-200">
-            <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-sm text-red-900">
+          <Alert className="mb-6 bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800">
+            <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+            <AlertDescription className="text-sm text-red-900 dark:text-red-300">
               <strong>PagBank não configurado:</strong> Um administrador precisa configurar as credenciais do PagBank antes de processar pagamentos.
             </AlertDescription>
           </Alert>
         )}
 
         {PAYMENT_MODE === "pagbank" && adminAccount && (
-          <Alert className="mb-6 bg-blue-50 border-blue-200">
-            <Shield className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-sm text-blue-900">
+          <Alert className="mb-6 bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+            <Shield className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+            <AlertDescription className="text-sm text-blue-900 dark:text-purple-300">
               <strong>Pagamento via PagBank:</strong> Seu pagamento será processado de forma segura pelo PagBank.
               {adminAccount.pagbank_mode === "sandbox" && " (Modo Sandbox - Testes)"}
             </AlertDescription>
@@ -486,25 +487,25 @@ export default function Checkout() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="border-none shadow-xl">
+            <Card className="border-none shadow-xl dark:bg-gray-800">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-blue-600" />
+                <CardTitle className="flex items-center gap-2 dark:text-white">
+                  <Lock className="w-5 h-5 text-blue-600 dark:text-purple-400" />
                   Pagamento Seguro
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="pix" className="flex items-center gap-2">
+                  <TabsList className="grid w-full grid-cols-3 mb-6 dark:bg-gray-700">
+                    <TabsTrigger value="pix" className="flex items-center gap-2 dark:data-[state=active]:bg-purple-600">
                       <QrCode className="w-4 h-4" />
                       PIX
                     </TabsTrigger>
-                    <TabsTrigger value="credit_card" className="flex items-center gap-2">
+                    <TabsTrigger value="credit_card" className="flex items-center gap-2 dark:data-[state=active]:bg-purple-600">
                       <CreditCard className="w-4 h-4" />
                       Cartão
                     </TabsTrigger>
-                    <TabsTrigger value="boleto" className="flex items-center gap-2">
+                    <TabsTrigger value="boleto" className="flex items-center gap-2 dark:data-[state=active]:bg-purple-600">
                       <Building className="w-4 h-4" />
                       Boleto
                     </TabsTrigger>
@@ -512,31 +513,31 @@ export default function Checkout() {
 
                   {/* PIX */}
                   <TabsContent value="pix" className="space-y-4">
-                    <Alert className="bg-blue-50 border-blue-200">
-                      <QrCode className="h-4 w-4 text-blue-600" />
-                      <AlertDescription className="text-sm text-blue-900">
+                    <Alert className="bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+                      <QrCode className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+                      <AlertDescription className="text-sm text-blue-900 dark:text-purple-300">
                         <strong>Pagamento Instantâneo:</strong> Use o app do seu banco para pagar com PIX
                       </AlertDescription>
                     </Alert>
 
                     {pixCode ? (
                       <div className="space-y-4">
-                        <div className="bg-white border-2 border-blue-200 rounded-lg p-6">
-                          <div className="w-64 h-64 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                            <QrCode className="w-32 h-32 text-gray-400" />
+                        <div className="bg-white dark:bg-gray-700 border-2 border-blue-200 dark:border-purple-600 rounded-lg p-6">
+                          <div className="w-64 h-64 bg-gray-100 dark:bg-gray-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                            <QrCode className="w-32 h-32 text-gray-400 dark:text-gray-500" />
                           </div>
-                          <p className="text-center text-sm text-gray-600 mb-2">
+                          <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-2">
                             Escaneie o QR Code com o app do seu banco
                           </p>
-                          <div className="bg-gray-50 rounded-lg p-3 mt-4">
-                            <p className="text-xs text-gray-500 mb-1">Código PIX Copia e Cola:</p>
-                            <p className="text-xs font-mono break-all text-gray-700">{pixCode}</p>
+                          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mt-4">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Código PIX Copia e Cola:</p>
+                            <p className="text-xs font-mono break-all text-gray-700 dark:text-gray-300">{pixCode}</p>
                           </div>
                         </div>
                         <Button
                           onClick={() => handlePayment()}
                           disabled={isProcessing}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                          className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 dark:from-orange-500 dark:to-orange-600 dark:hover:from-orange-600 dark:hover:to-orange-700"
                           size="lg"
                         >
                           {isProcessing ? (
@@ -555,7 +556,7 @@ export default function Checkout() {
                     ) : (
                       <Button
                         onClick={generatePixCode}
-                        className="w-full"
+                        className="w-full dark:bg-purple-600 dark:hover:bg-purple-700"
                         size="lg"
                       >
                         Gerar Código PIX
@@ -566,7 +567,7 @@ export default function Checkout() {
                   {/* Credit Card */}
                   <TabsContent value="credit_card" className="space-y-4">
                     <div>
-                      <Label htmlFor="card_number">Número do Cartão</Label>
+                      <Label htmlFor="card_number" className="dark:text-gray-300">Número do Cartão</Label>
                       <Input
                         id="card_number"
                         placeholder="1234 5678 9012 3456"
@@ -577,11 +578,11 @@ export default function Checkout() {
                           setCardData({ ...cardData, number: formatted });
                         }}
                         maxLength={19}
-                        className="mt-2"
+                        className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="card_name">Nome do Titular</Label>
+                      <Label htmlFor="card_name" className="dark:text-gray-300">Nome do Titular</Label>
                       <Input
                         id="card_name"
                         placeholder="Nome como está no cartão"
@@ -589,12 +590,12 @@ export default function Checkout() {
                         onChange={(e) =>
                           setCardData({ ...cardData, name: e.target.value.toUpperCase() })
                         }
-                        className="mt-2"
+                        className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="expiry">Validade</Label>
+                        <Label htmlFor="expiry" className="dark:text-gray-300">Validade</Label>
                         <Input
                           id="expiry"
                           placeholder="MM/AA"
@@ -605,11 +606,11 @@ export default function Checkout() {
                             setCardData({ ...cardData, expiry: formatted });
                           }}
                           maxLength={5}
-                          className="mt-2"
+                          className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="cvv">CVV</Label>
+                        <Label htmlFor="cvv" className="dark:text-gray-300">CVV</Label>
                         <Input
                           id="cvv"
                           placeholder="123"
@@ -622,14 +623,14 @@ export default function Checkout() {
                             })
                           }
                           maxLength={4}
-                          className="mt-2"
+                          className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                         />
                       </div>
                     </div>
                     <Button
                       onClick={handlePayment}
                       disabled={isProcessing}
-                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-purple-600 dark:to-purple-700 dark:hover:from-purple-700 dark:hover:to-purple-800"
                       size="lg"
                     >
                       {isProcessing ? (
@@ -648,22 +649,22 @@ export default function Checkout() {
 
                   {/* Boleto */}
                   <TabsContent value="boleto" className="space-y-4">
-                    <Alert className="bg-blue-50 border-blue-200">
-                      <Building className="h-4 w-4 text-blue-600" />
-                      <AlertDescription className="text-sm text-blue-900">
+                    <Alert className="bg-blue-50 border-blue-200 dark:bg-purple-900/20 dark:border-purple-800">
+                      <Building className="h-4 w-4 text-blue-600 dark:text-purple-400" />
+                      <AlertDescription className="text-sm text-blue-900 dark:text-purple-300">
                         <strong>Pagamento em até 3 dias úteis:</strong> Confirmaremos seu pedido após o pagamento
                       </AlertDescription>
                     </Alert>
-                    <div className="bg-gray-50 rounded-lg p-6 text-center">
-                      <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
+                      <Building className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">
                         Clique no botão abaixo para gerar seu boleto
                       </p>
                     </div>
                     <Button
                       onClick={handlePayment}
                       disabled={isProcessing}
-                      className="w-full"
+                      className="w-full dark:bg-purple-600 dark:hover:bg-purple-700"
                       size="lg"
                     >
                       {isProcessing ? (
@@ -681,15 +682,15 @@ export default function Checkout() {
             </Card>
 
             {/* Security Info */}
-            <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50">
+            <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-purple-900/20 dark:to-gray-800 dark:bg-gray-800">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-purple-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-6 h-6 text-blue-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Pagamento 100% Seguro</h3>
-                    <p className="text-sm text-gray-600">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Pagamento 100% Seguro</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       Seus dados são protegidos com criptografia de ponta a ponta. 
                       Não armazenamos informações do seu cartão.
                     </p>
@@ -701,9 +702,9 @@ export default function Checkout() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <Card className="border-none shadow-xl sticky top-8">
+            <Card className="border-none shadow-xl sticky top-8 dark:bg-gray-800">
               <CardHeader>
-                <CardTitle>Resumo do Pedido</CardTitle>
+                <CardTitle className="dark:text-white">Resumo do Pedido</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Event Info */}
@@ -716,51 +717,51 @@ export default function Checkout() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-purple-600 dark:to-purple-800"></div>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{event.title}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     {format(new Date(event.date), "dd 'de' MMMM, yyyy 'às' HH:mm", {
                       locale: ptBR,
                     })}
                   </p>
-                  <p className="text-sm text-gray-600">{event.location}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{event.location}</p>
                 </div>
 
                 {/* Price Breakdown */}
-                <div className="space-y-3 pt-4 border-t border-gray-200">
+                <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">
+                    <span className="text-gray-600 dark:text-gray-400">
                       {quantity} × Ingresso{quantity > 1 ? "s" : ""}
                     </span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-gray-900 dark:text-white">
                       R$ {totalAmount.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Taxa de serviço (5%)</span>
-                    <span className="text-gray-600">R$ {platformFee.toFixed(2)}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Taxa de serviço (5%)</span>
+                    <span className="text-gray-600 dark:text-gray-400">R$ {platformFee.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between pt-3 border-t border-gray-200">
-                    <span className="font-semibold text-gray-900">Total</span>
-                    <span className="text-2xl font-bold text-gray-900">
+                  <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <span className="font-semibold text-gray-900 dark:text-white">Total</span>
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
                       R$ {finalAmount.toFixed(2)}
                     </span>
                   </div>
                 </div>
 
                 {/* User Info */}
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-xs text-gray-500 mb-1">Comprador</p>
-                  <p className="text-sm font-semibold text-gray-900">{user.full_name}</p>
-                  <p className="text-sm text-gray-600">{user.email}</p>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-1">Comprador</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.full_name}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
                 </div>
 
                 {/* Refund Policy */}
-                <Alert className="bg-green-50 border-green-200">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-xs text-green-900">
+                <Alert className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
+                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <AlertDescription className="text-xs text-green-900 dark:text-green-300">
                     Reembolso disponível em até 7 dias após a compra
                   </AlertDescription>
                 </Alert>

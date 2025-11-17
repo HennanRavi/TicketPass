@@ -53,20 +53,24 @@ export default function EventCard({ event, averageRating, reviewCount }) {
           </div>
         )}
         
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
-          {event.category && (
+        {/* Category Badge - Right Side */}
+        {event.category && (
+          <div className="absolute top-3 right-3">
             <Badge className={categoryColors[event.category] || categoryColors.outro}>
               {categoryLabels[event.category] || event.category}
             </Badge>
-          )}
-          {occupancyPercentage > 80 && (
+          </div>
+        )}
+
+        {/* Ocupancy Badge - Left Side */}
+        {occupancyPercentage > 80 && (
+          <div className="absolute top-3 left-3">
             <Badge className="bg-red-500 dark:bg-red-700 text-white">
               <TrendingUp className="w-3 h-3 mr-1" />
               Quase Esgotado
             </Badge>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Rating */}
         {averageRating > 0 && (

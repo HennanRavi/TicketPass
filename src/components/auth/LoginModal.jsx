@@ -10,401 +10,134 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Mail, Lock, User, AlertCircle, Eye, EyeOff, Ticket, CheckCircle2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
+import { Mail, Lock, Ticket } from "lucide-react";
 
-export default function LoginModal({ open, onOpenChange, onLoginSuccess }) {
-  const [activeTab, setActiveTab] = useState("login");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  
-  // Login form
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  
-  // Register form
-  const [registerName, setRegisterName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const [registerConfirmPassword, setRegisterConfirmPassword] = useState("");
+export default function LoginModal({ open, onOpenChange }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const resetForms = () => {
-    setLoginEmail("");
-    setLoginPassword("");
-    setRegisterName("");
-    setRegisterEmail("");
-    setRegisterPassword("");
-    setRegisterConfirmPassword("");
-    setError("");
-    setShowPassword(false);
-  };
-
-  const handleLogin = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    try {
-      // Validações básicas
-      if (!loginEmail || !loginPassword) {
-        setError("Por favor, preencha todos os campos");
-        setIsLoading(false);
-        return;
-      }
-
-      // Validar formato de email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(loginEmail)) {
-        setError("Por favor, insira um email válido");
-        setIsLoading(false);
-        return;
-      }
-
-      // Como o Base44 usa autenticação própria, vamos redirecionar
-      // mas de forma mais suave
-      toast.info("Redirecionando para login seguro...");
-      
-      // Salvar dados para depois do login
-      sessionStorage.setItem('loginIntent', 'purchase');
-      sessionStorage.setItem('returnUrl', window.location.href);
-      
-      // Pequeno delay para o usuário ver o toast
-      setTimeout(() => {
-        base44.auth.redirectToLogin(window.location.href);
-      }, 500);
-      
-    } catch (err) {
-      console.error("Erro no login:", err);
-      setError(err.message || "Erro ao fazer login. Tente novamente.");
-      setIsLoading(false);
-    }
+    base44.auth.redirectToLogin(window.location.href);
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
-
-    try {
-      // Validações
-      if (!registerName || !registerEmail || !registerPassword || !registerConfirmPassword) {
-        setError("Por favor, preencha todos os campos");
-        setIsLoading(false);
-        return;
-      }
-
-      if (registerName.length < 3) {
-        setError("Nome deve ter pelo menos 3 caracteres");
-        setIsLoading(false);
-        return;
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(registerEmail)) {
-        setError("Por favor, insira um email válido");
-        setIsLoading(false);
-        return;
-      }
-
-      if (registerPassword.length < 6) {
-        setError("Senha deve ter pelo menos 6 caracteres");
-        setIsLoading(false);
-        return;
-      }
-
-      if (registerPassword !== registerConfirmPassword) {
-        setError("As senhas não coincidem");
-        setIsLoading(false);
-        return;
-      }
-
-      toast.info("Redirecionando para criar sua conta...");
-      
-      // Salvar dados para depois do registro
-      sessionStorage.setItem('loginIntent', 'purchase');
-      sessionStorage.setItem('returnUrl', window.location.href);
-      
-      setTimeout(() => {
-        base44.auth.redirectToLogin(window.location.href);
-      }, 500);
-
-    } catch (err) {
-      console.error("Erro no registro:", err);
-      setError(err.message || "Erro ao criar conta. Tente novamente.");
-      setIsLoading(false);
-    }
-  };
-
-  const handleClose = () => {
-    resetForms();
-    onOpenChange(false);
+  const handleSocialLogin = () => {
+    base44.auth.redirectToLogin(window.location.href);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Ticket className="w-8 h-8 text-white" />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[420px] p-0 gap-0 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+        <div className="p-8">
+          <DialogHeader className="space-y-4">
+            <div className="flex items-center justify-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 rounded-full flex items-center justify-center shadow-xl">
+                <Ticket className="w-10 h-10 text-white" />
+              </div>
             </div>
-          </div>
-          <DialogTitle className="text-center text-2xl font-bold">
-            {activeTab === "login" ? "Bem-vindo de Volta!" : "Criar Sua Conta"}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            {activeTab === "login" 
-              ? "Entre para comprar seus ingressos" 
-              : "Crie sua conta gratuitamente"}
-          </DialogDescription>
-        </DialogHeader>
+            <div>
+              <DialogTitle className="text-center text-2xl font-bold text-gray-900 dark:text-white">
+                Welcome to TicketPass
+              </DialogTitle>
+              <DialogDescription className="text-center text-gray-600 dark:text-gray-400 mt-2">
+                Sign in to continue
+              </DialogDescription>
+            </div>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {error && (
-            <Alert variant="destructive" className="animate-in slide-in-from-top-2">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          <div className="space-y-4 mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 text-base font-medium border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600 hover:bg-gray-50"
+              onClick={handleSocialLogin}
+            >
+              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                <path
+                  fill="#4285F4"
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                />
+              </svg>
+              Continue with Google
+            </Button>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Entrar</TabsTrigger>
-              <TabsTrigger value="register">Criar Conta</TabsTrigger>
-            </TabsList>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-12 text-base font-medium border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:bg-gray-600 hover:bg-gray-50"
+              onClick={handleSocialLogin}
+            >
+              <svg className="w-5 h-5 mr-3" fill="#1877F2" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Continue with Facebook
+            </Button>
 
-            {/* LOGIN TAB */}
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="email"
-                    />
-                  </div>
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300 dark:border-gray-600" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400 font-medium">OR</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 h-11 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+                    autoComplete="email"
+                  />
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="login-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      className="pl-10 pr-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="current-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                      disabled={isLoading}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 h-11 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
+                    autoComplete="current-password"
+                  />
                 </div>
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 h-11 text-base font-semibold"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Entrando...
-                    </>
-                  ) : (
-                    "Entrar"
-                  )}
-                </Button>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-gray-300" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-gray-500">Ou</span>
-                  </div>
-                </div>
-
-                <p className="text-center text-sm text-gray-600">
-                  Não tem uma conta?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("register")}
-                    className="text-blue-600 hover:underline font-semibold"
-                    disabled={isLoading}
-                  >
-                    Criar agora
-                  </button>
-                </p>
-              </form>
-            </TabsContent>
-
-            {/* REGISTER TAB */}
-            <TabsContent value="register">
-              <form onSubmit={handleRegister} className="space-y-4">
-                {/* Benefits */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 mb-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-green-900">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                      <span>Compre ingressos rapidamente</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-green-900">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                      <span>Acesse seus ingressos sempre</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-green-900">
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                      <span>Organize seus próprios eventos</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="register-name">Nome Completo</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-name"
-                      type="text"
-                      placeholder="João Silva"
-                      value={registerName}
-                      onChange={(e) => setRegisterName(e.target.value)}
-                      className="pl-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="name"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="register-email">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={registerEmail}
-                      onChange={(e) => setRegisterEmail(e.target.value)}
-                      className="pl-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="email"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="register-password">Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Mínimo 6 caracteres"
-                      value={registerPassword}
-                      onChange={(e) => setRegisterPassword(e.target.value)}
-                      className="pl-10 pr-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="new-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
-                      disabled={isLoading}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="register-confirm-password">Confirmar Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                    <Input
-                      id="register-confirm-password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Digite a senha novamente"
-                      value={registerConfirmPassword}
-                      onChange={(e) => setRegisterConfirmPassword(e.target.value)}
-                      className="pl-10 h-11"
-                      disabled={isLoading}
-                      autoComplete="new-password"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 h-11 text-base font-semibold"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Criando conta...
-                    </>
-                  ) : (
-                    "Criar Conta Grátis"
-                  )}
-                </Button>
-
-                <p className="text-center text-sm text-gray-600">
-                  Já tem uma conta?{" "}
-                  <button
-                    type="button"
-                    onClick={() => setActiveTab("login")}
-                    className="text-blue-600 hover:underline font-semibold"
-                    disabled={isLoading}
-                  >
-                    Fazer login
-                  </button>
-                </p>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          <div className="pt-4 border-t border-gray-200">
-            <p className="text-xs text-center text-gray-500">
-              Ao continuar, você concorda com nossos{" "}
-              <a href={"/TermosUso"} target="_blank" className="text-blue-600 hover:underline">
-                Termos de Uso
-              </a>{" "}
-              e{" "}
-              <a href={"/PoliticaPrivacidade"} target="_blank" className="text-blue-600 hover:underline">
-                Política de Privacidade
-              </a>
-            </p>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black dark:from-gray-700 dark:to-gray-800 dark:hover:from-gray-800 dark:hover:to-gray-900 h-12 text-base font-semibold text-white"
+              >
+                Sign in
+              </Button>
+            </form>
           </div>
         </div>
       </DialogContent>

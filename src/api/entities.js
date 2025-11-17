@@ -29,6 +29,10 @@ export const PaymentTransaction = base44.entities.PaymentTransaction;
 
 export const Report = base44.entities.Report;
 
+export const EventPlaylist = base44.entities.EventPlaylist;
+
+export const PlaylistLike = base44.entities.PlaylistLike;
+
 
 
 // auth sdk:
